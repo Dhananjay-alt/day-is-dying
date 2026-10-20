@@ -1,0 +1,207 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-display: 'Space Grotesk', -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --neu-bg: #1e2028;
+    --neu-surface: #242731;
+    --neu-surface-light: #2b2e3a;
+    --neu-surface-dark: #191a22;
+  }
+
+  body {
+    font-family: var(--font-display);
+    background-color: var(--neu-bg);
+    color: #e4e4e7;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* Custom Neomorphic scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #191a21;
+    border-radius: 9999px;
+    box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.5);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(145deg, #2e313e, #222530);
+    border-radius: 9999px;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.35), -1px -1px 2px rgba(255, 255, 255, 0.08);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(145deg, #373a4b, #2b2e3b);
+  }
+}
+
+.font-display {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ========================================================
+   LIGHTER DARK NEOMORPHISM DESIGN TOKENS & UTILITIES
+   ======================================================== */
+
+/* Extruded Neomorphic Panel */
+.neu-panel, .brutal-panel {
+  background: linear-gradient(145deg, #252834, #1f2129);
+  border-radius: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 6px 6px 16px rgba(0, 0, 0, 0.42), -5px -5px 14px rgba(255, 255, 255, 0.06);
+}
+
+.neu-panel-danger, .brutal-panel-danger {
+  background: linear-gradient(145deg, #2a161b, #1f1014);
+  border-radius: 1.25rem;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  box-shadow: 6px 6px 16px rgba(0, 0, 0, 0.45), -4px -4px 12px rgba(239, 68, 68, 0.08);
+}
+
+/* Sunken / Inset / Recessed Surface */
+.neu-sunken, .tactile-sunken {
+  background-color: #161720;
+  border-radius: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.55), inset -3px -3px 6px rgba(255, 255, 255, 0.05);
+}
+
+/* Raised Tactile Control */
+.neu-raised, .tactile-raised {
+  background: linear-gradient(145deg, #282b37, #1f222c);
+  border-radius: 0.875rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.38), -3px -3px 8px rgba(255, 255, 255, 0.06);
+}
+
+/* Neomorphic Interactive Button */
+.neu-btn, .brutal-btn {
+  background: linear-gradient(145deg, #272a36, #20222c);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 4px 4px 9px rgba(0, 0, 0, 0.38), -3px -3px 7px rgba(255, 255, 255, 0.06);
+  transition: all 160ms cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+  font-family: 'Space Grotesk', sans-serif;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #e4e4e7;
+}
+
+.neu-btn:hover, .brutal-btn:hover {
+  background: linear-gradient(145deg, #2d303e, #232632);
+  box-shadow: 5px 5px 12px rgba(0, 0, 0, 0.45), -4px -4px 9px rgba(255, 255, 255, 0.09);
+  transform: translateY(-1px);
+}
+
+.neu-btn:active, .brutal-btn:active {
+  background: #171821;
+  border-color: rgba(0, 0, 0, 0.4);
+  box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.6), inset -2px -2px 5px rgba(255, 255, 255, 0.04);
+  transform: translateY(1px) scale(0.98);
+}
+
+/* Danger Button Variant */
+.neu-btn-danger, .brutal-btn-danger {
+  background: linear-gradient(145deg, #3d171c, #2a0e12);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.45), -3px -3px 7px rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
+}
+
+.neu-btn-danger:hover, .brutal-btn-danger:hover {
+  background: linear-gradient(145deg, #4b1c22, #331116);
+  box-shadow: 5px 5px 13px rgba(0, 0, 0, 0.52), -4px -4px 9px rgba(239, 68, 68, 0.2);
+  color: #ffffff;
+}
+
+.neu-btn-danger:active, .brutal-btn-danger:active {
+  background: #200a0d;
+  box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.7), inset -2px -2px 5px rgba(239, 68, 68, 0.08);
+  transform: translateY(1px) scale(0.98);
+}
+
+/* Primary Accent Button Variant */
+.neu-btn-accent, .brutal-btn-accent {
+  background: linear-gradient(145deg, #d32f2f, #9c1c1c);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.45), -3px -3px 8px rgba(239, 68, 68, 0.4);
+  color: #ffffff;
+}
+
+.neu-btn-accent:hover, .brutal-btn-accent:hover {
+  background: linear-gradient(145deg, #e53935, #b71c1c);
+  box-shadow: 6px 6px 16px rgba(0, 0, 0, 0.55), -4px -4px 10px rgba(239, 68, 68, 0.5);
+}
+
+.neu-btn-accent:active, .brutal-btn-accent:active {
+  background: #8b1515;
+  box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.65), inset -2px -2px 6px rgba(255, 255, 255, 0.2);
+  transform: translateY(1px) scale(0.98);
+}
+
+/* Success Button Variant */
+.neu-btn-success, .brutal-btn-success {
+  background: linear-gradient(145deg, #13422d, #0d2c1e);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.45), -3px -3px 7px rgba(16, 185, 129, 0.18);
+  color: #34d399;
+}
+
+.neu-btn-success:hover, .brutal-btn-success:hover {
+  background: linear-gradient(145deg, #175237, #103625);
+  box-shadow: 5px 5px 12px rgba(0, 0, 0, 0.52), -4px -4px 9px rgba(16, 185, 129, 0.28);
+}
+
+.neu-btn-success:active, .brutal-btn-success:active {
+  background: #091f15;
+  box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.7), inset -2px -2px 5px rgba(16, 185, 129, 0.1);
+  transform: translateY(1px) scale(0.98);
+}
+
+/* Neomorphic Life Bar / Fuel Meter */
+.meter-stripes {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(0, 0, 0, 0.3),
+    rgba(0, 0, 0, 0.3) 6px,
+    transparent 6px,
+    transparent 12px
+  );
+}
+
+/* Soft Neomorphic Glows */
+.glow-danger {
+  box-shadow: 0 0 25px rgba(239, 68, 68, 0.22), 6px 6px 18px rgba(0, 0, 0, 0.45), -5px -5px 14px rgba(255, 255, 255, 0.05);
+}
+
+.glow-warning {
+  box-shadow: 0 0 25px rgba(245, 158, 11, 0.2), 6px 6px 18px rgba(0, 0, 0, 0.45), -5px -5px 14px rgba(255, 255, 255, 0.05);
+}
+
+.glow-focus {
+  box-shadow: 0 0 25px rgba(16, 185, 129, 0.2), 6px 6px 18px rgba(0, 0, 0, 0.45), -5px -5px 14px rgba(255, 255, 255, 0.05);
+}
+
+/* Soft Pulsing Ambient */
+@keyframes neu-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.98); }
+}
+
+.animate-warning-pulse {
+  animation: neu-pulse 2s infinite ease-in-out;
+}
