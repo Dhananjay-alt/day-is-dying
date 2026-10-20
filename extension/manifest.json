@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "YOUR DAY IS DYING - Active Tab Tracker",
+  "short_name": "YDID",
+  "version": "1.0.0",
+  "description": "Local browser activity tracker for YOUR DAY IS DYING desktop instrument. Zero cloud, 100% private.",
+  "permissions": [
+    "tabs",
+    "idle",
+    "storage"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1:41832/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "YOUR DAY IS DYING",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}

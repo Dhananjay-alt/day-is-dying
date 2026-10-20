@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>YOUR DAY IS DYING</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+    }
+    body {
+      width: 290px;
+      background-color: #0c0c10;
+      color: #e4e4e7;
+      padding: 16px;
+      border: 2px solid #23232f;
+    }
+    .header {
+      border-bottom: 2px solid #23232f;
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+    }
+    .title {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #ef4444;
+    }
+    .subtitle {
+      font-size: 11px;
+      color: #71717a;
+      letter-spacing: 0.05em;
+      margin-top: 2px;
+    }
+    .status-card {
+      background-color: #13131a;
+      border: 2px solid #272736;
+      box-shadow: 3px 3px 0px #040406;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    .status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #a1a1aa;
+    }
+    .badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      padding: 2px 6px;
+      border: 1px solid #333;
+    }
+    .badge-online {
+      background-color: #0d2818;
+      color: #34d399;
+      border-color: #10b981;
+    }
+    .badge-offline {
+      background-color: #2b1114;
+      color: #f87171;
+      border-color: #ef4444;
+    }
+    .domain-display {
+      font-family: monospace;
+      font-size: 13px;
+      color: #f4f4f5;
+      background: #09090d;
+      border: 1px solid #1f1f2a;
+      padding: 6px 8px;
+      margin-top: 4px;
+      word-break: break-all;
+    }
+    .toggle-btn {
+      width: 100%;
+      background-color: #181822;
+      border: 2px solid #323244;
+      box-shadow: 3px 3px 0px #040406;
+      color: #e4e4e7;
+      padding: 10px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      transition: all 100ms ease;
+    }
+    .toggle-btn:hover {
+      background-color: #212130;
+      transform: translate(-1px, -1px);
+      box-shadow: 4px 4px 0px #040406;
+    }
+    .toggle-btn:active {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0px #040406;
+    }
+    .toggle-btn.disabled {
+      background-color: #3b1419;
+      border-color: #771f28;
+      color: #fca5a5;
+    }
+    .footer {
+      margin-top: 12px;
+      font-size: 9px;
+      color: #52525b;
+      text-align: center;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="title">YOUR DAY IS DYING</div>
+    <div class="subtitle">TIME WON'T WAIT.</div>
+  </div>
+
+  <div class="status-card">
+    <div class="status-row">
+      <span class="label">Desktop Link:</span>
+      <span id="connStatus" class="badge badge-offline">CONNECTING...</span>
+    </div>
+    <div class="label">Current Active Domain:</div>
+    <div id="activeDomain" class="domain-display">Detecting...</div>
+  </div>
+
+  <button id="toggleBtn" class="toggle-btn">TRACKING: ENABLED</button>
+
+  <div class="footer">
+    100% Local • Zero Cloud • Privacy First
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
