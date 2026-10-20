@@ -1,141 +1,278 @@
-# YOUR DAY IS DYING (YDID)
+# 💀 YOUR DAY IS DYING (YDID)
 
-> **Time won't wait.**  
-> *Watch your day disappear in real time.*
+<div align="center">
 
-A production-quality desktop productivity and time-awareness instrument built with **Tauri v2**, **Rust**, **React**, **TypeScript**, **SQLite**, **Tailwind CSS**, and **Manifest V3 Chrome Extension**.
+```text
+██╗   ██╗ ██████╗ ██╗   ██╗██████╗     ██████╗  █████╗ ██╗   ██╗    ██╗███████╗    ██████╗ ██╗   ██╗██╗███╗   ██╗ ██████╗ 
+╚██╗ ██╔╝██╔═══██╗██║   ██║██╔══██╗    ██╔══██╗██╔══██╗╚██╗ ██╔╝    ██║██╔════╝    ██╔══██╗╚██╗ ██╔╝██║████╗  ██║██╔════╝ 
+ ╚████╔╝ ██║   ██║██║   ██║██████╔╝    ██║  ██║███████║ ╚████╔╝     ██║███████╗    ██║  ██║ ╚████╔╝ ██║██╔██╗ ██║██║  ███╗
+  ╚██╔╝  ██║   ██║██║   ██║██╔══██╗    ██║  ██║██╔══██║  ╚██╔╝      ██║╚════██║    ██║  ██║  ╚██╔╝  ██║██║╚██╗██║██║   ██║
+   ██║   ╚██████╔╝╚██████╔╝██║  ██║    ██████╔╝██║  ██║   ██║       ██║███████║    ██████╔╝   ██║   ██║██║ ╚████║╚██████╔╝
+   ╚═╝    ╚═════╝  ╚═════╝ ╚═╝  ╚═╝    ╚═════╝ ╚═╝  ╚═╝   ╚═╝       ╚═╝╚══════╝    ╚═════╝    ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝ 
+```
+
+**Time won't wait.** • *Watch your day disappear in real time.*
+
+[![Tauri v2](https://img.shields.io/badge/Tauri-v2.12-24C8D8?style=flat-square&logo=tauri&logoColor=white)](https://tauri.app/)
+[![Rust](https://img.shields.io/badge/Rust-2021-DEA584?style=flat-square&logo=rust&logoColor=white)](https://www.rust-lang.org/)
+[![React 19](https://img.shields.io/badge/React-19.1-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![SQLite](https://img.shields.io/badge/SQLite-Local_WAL-003B57?style=flat-square&logo=sqlite&logoColor=white)](https://www.sqlite.org/)
+[![Zero Telemetry](https://img.shields.io/badge/Privacy-100%25_Local-10B981?style=flat-square)](#-privacy-first-guarantee)
+
+</div>
 
 ---
 
-## 💀 Product Identity & Core Philosophy
+## 🧭 Overview & Core Philosophy
 
-**YOUR DAY IS DYING** is not a generic Pomodoro timer or cheerful screen-time tracker. It does not preach, motivate, or gamify your life with streaks and confetti.
+**YOUR DAY IS DYING (YDID)** is not another generic Pomodoro timer, cheerful gamified habit tracker, or intrusive spyware dashboard. It does not preach, motivate, or reward you with colorful confetti or artificial streaks.
 
-Instead, it functions as a **physical time-monitoring instrument**:
-```
-TIME PASSES → ACTIVITY IS TRACKED → THE DAY SHRINKS → NOTIFICATION INTERRUPTS → USER BECOMES AWARE → USER CHANGES BEHAVIOR
-```
+Instead, YDID is engineered as a **relentless, physical time-monitoring instrument**:
 
-The central visual metaphor is a **health bar for today's remaining time**:
+> **TIME PASSES → ACTIVITY IS TRACKED → THE DAY SHRINKS → NOTIFICATION INTERRUPTS → USER BECOMES AWARE → USER CHANGES BEHAVIOR**
+
+### The Central Metaphor: A Depleting Life Bar
+Your day is treated like a finite video game health bar:
 ```text
 YOUR DAY
 
-19:42
+18:19
 
-████████████████░░░░░░░░
-          72%
+████████████████████████░░░░░░░░
+             72.6% GONE
 
-4h 18m REMAINING
+4h 56m REMAINING TODAY
 ```
 
 ---
 
-## ⚡ Tech Stack & Architecture
+## ⚡ Tech Stack Architecture
 
-- **Desktop Framework**: [Tauri v2](https://tauri.app/) (Rust + Webview)
-- **Frontend**: React 19 + TypeScript + Vite + Tailwind CSS
-- **Styling Architecture**: Hybrid **Neobrutalism** (structure, borders, hard offset shadows, high contrast) × **Neomorphism** (tactile depth, sunken displays, pressed controls)
-- **Audio Engine**: Zero-dependency procedural Web Audio API synthesizer for mechanical clock ticks, sub-bass distraction hits, clean focus clicks, warning pulses, and atmospheric end-of-day tones.
-- **Local Storage**: Embedded SQLite database (`rusqlite`) in WAL mode.
-- **Desktop Window Tracking**: Native Windows Win32 API (`GetForegroundWindow`, `GetWindowTextW`, `QueryFullProcessImageNameW`).
-- **Idle Detection**: Native `GetLastInputInfo` hardware tick tracking.
-- **Browser Tracking**: Chrome / Chromium Manifest V3 extension communicating directly with the desktop app's local bridge on `http://127.0.0.1:41832`.
-- **Zero Cloud / 100% Privacy**: No user accounts, no telemetry, no keystrokes, no screenshots, no passwords. All data remains strictly local on your machine.
+```mermaid
+graph TD
+    subgraph "Native Windows OS"
+        Win32[Win32 API: GetForegroundWindow & GetLastInputInfo]
+        RustCore[Rust Tracker Loop: 1s Interval]
+        LocalDB[(Embedded SQLite: ydid_data.sqlite)]
+        BridgeServer[Local HTTP Bridge: 127.0.0.1:41832]
+        Tray[Windows System Tray Menu]
+        Win32 --> RustCore
+        RustCore --> LocalDB
+        BridgeServer --> LocalDB
+    end
+
+    subgraph "Browser (Chrome / Edge / Brave)"
+        Ext[Manifest V3 Extension: background.js]
+        Ext -->|POST /event| BridgeServer
+    end
+
+    subgraph "Desktop Presentation (Tauri v2 + React 19)"
+        TauriApp[Tauri Native Window: main]
+        FloatingHUD[Movable HUD Instrument: CornerPinWidget]
+        AlwaysOnTop[Always-on-Top Floating Widget: FloatingWidgetView]
+        WebAudio[Zero-Asset Procedural Web Audio Engine]
+        RustCore -->|IPC Invoke| TauriApp
+        TauriApp --> FloatingHUD
+        TauriApp --> AlwaysOnTop
+        TauriApp --> WebAudio
+    end
+```
 
 ---
 
-## 🚀 Getting Started
+## 🚀 How to Run This Project
 
-### Prerequisites
-- [Node.js](https://nodejs.org/) (v18+)
-- [Rust & Cargo](https://rustup.rs/) (v1.75+)
-- Windows 10/11 (or macOS / Linux with stub tracker)
+### 📋 Prerequisites
+Ensure the following tools are installed on your machine:
+- **Node.js** (v18 or higher): `node -v`
+- **Rust & Cargo** (v1.75 or higher): `rustc --version`
+- **Windows C++ Build Tools**: (via Visual Studio Installer with *Desktop development with C++*)
 
-### 1. Install Dependencies
+---
+
+### Step 1: Install Dependencies
+Open a terminal in the root folder (`d:\Productive_project`):
 ```bash
 npm install
 ```
 
-### 2. Run in Desktop Dev Mode (Tauri)
+---
+
+### Step 2: Running the Application
+
+You have two ways to run the project depending on your workflow:
+
+#### Option A: Native Desktop App (Recommended) 🖥️
+This runs the full **native Windows desktop application** (`.exe`). It is **completely independent of Chrome or any browser**. Even if you close all browsers, the widget remains on your screen floating on top of all other software!
+
 ```bash
+# Run in development mode with hot-reloading
 npm run tauri dev
 ```
+*(Or directly launch the compiled binary: `.\src-tauri\target\debug\tauri-app.exe`)*
 
-### 3. Run Web / Frontend Preview
+#### Option B: Web Browser Simulator Preview 🌐
+If you want to rapidly inspect the React UI inside your browser:
 ```bash
 npm run dev
 ```
-Open `http://localhost:1420/` in your browser. The application includes a high-fidelity simulator that models active sessions and live time status when opened outside the Tauri native container.
+Open **`http://localhost:1420/`** in your browser.  
+> **💡 Tip**: You can open **`http://localhost:1420/?view=widget`** to directly view the compact floating widget view in your browser.
 
-### 4. Build Production Desktop Binary
+---
+
+### Step 3: Install the Browser Extension (Optional but Recommended) 🌐
+
+The extension automatically tracks active browser tab domains (e.g. `youtube.com`, `github.com`, `reddit.com`) and reports them to the desktop app over a local loopback bridge (`127.0.0.1:41832`).
+
+1. Open **Google Chrome**, **Microsoft Edge**, or **Brave**.
+2. Navigate to: `chrome://extensions/`
+3. In the top-right corner, turn ON **Developer mode**.
+4. Click the **Load unpacked** button.
+5. Select the `extension/` directory inside this repository:
+   ```text
+   d:\Productive_project\extension
+   ```
+6. Pin the **YDID** icon in your browser toolbar. When active, clicking the icon will display connection status: `BRIDGE CONNECTED`.
+
+---
+
+### Step 4: Compiling a Standalone Production Executable 📦
+To build a standalone production release installer and `.exe`:
 ```bash
 npm run tauri build
 ```
-The compiled executable will be located in `src-tauri/target/release/YOUR DAY IS DYING.exe`.
+The compiled standalone binary will be generated at:
+```text
+src-tauri/target/release/tauri-app.exe
+```
 
 ---
 
-## 🌐 Chrome / Chromium Extension Setup
+## 🎛 The Movable HUD & Always-On-Top Desktop Widget
 
-The browser extension tracks active tab domains (e.g. `youtube.com`, `github.com`) and reports durations directly to your local desktop app over port `41832`.
+### 1. Freely Movable Drag Handle
+- The in-window floating HUD widget (`CornerPinWidget.tsx`) is **freely draggable** across your screen.
+- Click and drag the tactile **`GripHorizontal`** handle (<kbd>:::</kbd>) on the widget header to move it anywhere.
+- Your position is automatically saved to `localStorage` (`ydid_hud_position`), so it never resets or gets lost.
+- **Snap to Corner**: Click the **Snap** button (<kbd>⇄</kbd>) anytime to cycle through the 4 window corners.
+- **Pill Dial Mode**: Click the chevron (<kbd>▼</kbd>) to minimize the widget into a compact, draggable pill dial (`4h 44m | 73.6%`).
 
-1. Open Chrome, Edge, or Brave and navigate to `chrome://extensions/`.
-2. Enable **Developer mode** (toggle in top right).
-3. Click **Load unpacked**.
-4. Select the `extension/` folder in this repository (`d:\Productive_project\extension`).
-5. Pin the **YDID** icon in your browser toolbar. Clicking it displays connection status to the desktop app and the current active domain.
+### 2. Stays Alive On Top of Other Apps After Closing the Window
+- In the native desktop app, when you click the window close button (<kbd>✕</kbd>), **the app does not quit**.
+- Tauri intercepts `WindowEvent::CloseRequested`, prevents termination, resizes to a compact floating instrument (`340 × 220`), sets `always_on_top: true`, and switches to **`FloatingWidgetView`**.
+- It floats above **VS Code, terminals, games, Word, and browsers**.
+- The entire widget chassis has `data-tauri-drag-region`, allowing you to freely drag the native window across monitors.
+
+### 3. Restoring the Full Dashboard
+- Click the **Maximize** button (<kbd>⛶</kbd>) on the widget.
+- Or click the **YDID** icon in your **Windows System Tray** (near the clock) and select **Open Dashboard**.
+
+### 4. Fully Quitting the Application
+- When you genuinely want to stop the tracker and close everything, right-click the **Windows System Tray icon** and click **Quit YDID**.
 
 ---
 
-## 🎛 Key Features
+## 🔊 Procedural Web Audio Engine (Zero Sound Files)
 
-1. **Physical Countdown Instrument**:
-   - Massive monospaced countdown `HH:MM:SS REMAINING` with recessed tactile depth.
-   - Striped fuel gauge life bar showing percentage of today elapsed.
-   - Escalating Day Messages at critical thresholds (`THE DAY HAS STARTED` → `HALF YOUR DAY IS GONE` → `YOUR DAY IS DYING` → `YOU DON'T HAVE MUCH LEFT` → `TODAY IS DEAD`).
+All audio in YDID is generated procedurally using the **Web Audio API** (`src/services/audio.ts`). No MP3, WAV, or external audio files are loaded:
 
-2. **Always-On-Top Floating Widget Mode**:
-   - One-click transformation (`WIDGET` button in header or system tray).
-   - Minimal tactile desktop instrument showing current time, mini health bar, remaining hours, and active window.
-   - Expands automatically into a warning banner when a notification triggers.
-   - Draggable, resizable, and sits above all applications.
+| Sound Type | Synthesis Technique | Emotional Impact |
+|:---|:---|:---|
+| **Normal Tick** | Dual high-frequency bandpass-filtered noise burst (0.015s) | Subtle, physical mechanical clock tooth engagement. |
+| **Distraction Drop** | Sine wave sweeping from 95Hz down to 28Hz with soft sub-bass saturation | Sinking feeling; subtle reminder of wasted time. |
+| **Focus Click** | High-Q 1800Hz resonant bandpass burst with logarithmic decay | Tactile, clean positive feedback upon focus action. |
+| **Warning Pulse** | Dual 60Hz and 72Hz sine wave simulating an elevated heartbeat | Biological urgency when day enters critical >85% elapsed. |
+| **Hour Chime** | Multi-harmonic triad (C5, G5, C6) with lingering metallic shimmer | Time checkpoint marking the departure of another hour. |
+| **End of Day** | Low-frequency 42Hz saw drone with slow lowpass filter modulation | Weighty atmospheric acknowledgment that today is finished. |
 
-3. **Context-Aware Signature Interruption Engine**:
-   - Periodic reminders (15m, 30m, 45m, 60m).
-   - Analyzes activity within that specific interval:
-     - **Productive Interval**: *"30 MINUTES GONE. You spent them coding. Keep going."*
-     - **Distraction Interval**: *"30 MINUTES GONE. YouTube took 27 of them."*
-     - **App Switching**: *"WHERE DID YOU GO? 7 apps. 30 minutes."*
-     - **Deep Focus**: *"TIME PASSED. 48 minutes of uninterrupted work. Keep going."*
-     - **Idle / Away**: *"THE CLOCK DIDN'T STOP. You were away for 30 minutes."*
-     - **Mixed Activity**: *"30 MINUTES GONE. 12m coding, 11m YouTube, 7m browsing. Where did it go?"*
+---
 
-4. **Time Debt & Repayment Ledger**:
-   - Surrendering time to distractions accumulates debt (`HH:MM:SS`).
-   - Repay debt through focused work blocks (`[ FOCUS 25 MIN ]`, `[ FOCUS 50 MIN ]`).
+## 📂 Project Structure
 
-5. **Opportunity Cost Calculation**:
-   - Enter your estimated hourly rate (e.g. ₹300/hr or $50/hr).
-   - Real-time calculation of estimated economic potential lost to distractions.
+```text
+d:\Productive_project\
+├── package.json                 # Project dependencies and npm scripts
+├── vite.config.ts               # Vite configuration with Tailwind CSS & Tauri plugins
+├── tsconfig.json                # TypeScript compiler configuration
+├── index.html                   # Single-page application entry point
+├── README.md                    # Product documentation & running guide
+│
+├── extension/                   # Chrome / Chromium Manifest V3 Extension
+│   ├── manifest.json            # Extension manifest definition
+│   ├── background.js            # Active tab tracker & local bridge reporter
+│   ├── popup.html               # Extension connection popup UI
+│   ├── popup.js                 # Popup status scripts
+│   └── icon*.png                # Extension icons
+│
+├── src-tauri/                   # Rust Backend (Tauri v2)
+│   ├── Cargo.toml               # Rust crates (tauri, rusqlite, tiny_http, chrono, windows)
+│   ├── tauri.conf.json          # Tauri application and window configurations
+│   └── src/
+│       ├── main.rs              # Desktop executable entry point
+│       ├── lib.rs               # Tauri commands, tray menu & CloseRequested hook
+│       ├── models.rs            # Core data types (DayStatus, Activity, Rules, Debt)
+│       ├── db.rs                # SQLite database migrations, chunk coalescing & queries
+│       ├── tracker.rs           # Native Win32 foreground window & idle tick tracking
+│       └── server.rs            # Local HTTP bridge server (127.0.0.1:41832)
+│
+└── src/                         # Frontend Application (React 19 + TypeScript)
+    ├── main.tsx                 # React DOM mount point
+    ├── App.tsx                  # Main application orchestrator & view state
+    ├── index.css                # Dark neomorphism design system & tokens
+    │
+    ├── types/
+    │   └── index.ts             # TypeScript interfaces mirroring Rust models
+    │
+    ├── services/
+    │   ├── api.ts               # Tauri invoke bridge with browser fallback simulator
+    │   └── audio.ts             # Web Audio procedural synthesis engine
+    │
+    └── components/
+        ├── Header.tsx           # Brand header, clock, pause & HUD toggle buttons
+        ├── CountdownHero.tsx    # Central physical countdown clock & life bar
+        ├── CurrentActivityBadge.tsx # Real-time active application & domain badge
+        ├── StatsGrid.tsx        # 4 category cards (Productive, Neutral, Distraction, Idle)
+        ├── TimeDebtPanel.tsx    # Asymmetrical debt ledger with repayment actions
+        ├── OpportunityCostPanel.tsx # Economic potential lost calculator
+        ├── TimelineView.tsx     # Chronological daily ribbon with category filtering
+        ├── WeeklyAnalytics.tsx  # 7-day rolling report & biggest time sink analysis
+        ├── CornerPinWidget.tsx  # Movable HUD widget with mouse drag & persistent storage
+        ├── FloatingWidgetView.tsx # Compact always-on-top desktop companion view
+        ├── FocusModeModal.tsx   # Dedicated focus session countdown with distraction alert
+        ├── EndOfDayReportModal.tsx # Honest end-of-day summary without cheerleading
+        ├── SignatureNotification.tsx # Context-aware signature non-toast drawer
+        ├── SettingsModal.tsx    # App rules, hourly rate, and sound customization
+        └── OnboardingModal.tsx  # First-run philosophical alignment & initial setup
+```
 
-6. **Focus Mode Console**:
-   - Dedicated countdown timer and session goal monitor.
-   - Distraction detector alert: if you switch to YouTube or a distracting app during a focus session, an alert triggers asking: *"YOU LEFT FOCUS. Return?"*
+---
 
-7. **Today's Timeline**:
-   - Chronological ribbon of your day with category color bars (Productive, Neutral, Distraction, Idle).
-   - Hover inspection displaying exact start/end timestamps, duration, app name, and window title.
-   - Filter by category.
+## 🔒 Privacy-First Guarantee
 
-8. **Weekly Rolling Analytics**:
-   - 7-day Monday through Sunday breakdown.
-   - Best Day highlight (e.g. *Tuesday: 6h 42m productive*).
-   - Biggest Time Sink callout (e.g. *YouTube: 5h 13m this week*).
+- **100% Local Storage**: All activity logs, timelines, and statistics are stored in an embedded SQLite database (`ydid_data.sqlite`) stored locally on your machine.
+- **Zero Telemetry**: No Google Analytics, no Mixpanel, no Sentry, no cloud servers.
+- **Zero Surveillance**: YDID **does not** capture keystrokes, passwords, screenshots, webcam video, or audio. It only inspects the active window executable name (`code.exe`) and web domain (`github.com`) to determine category classification.
+- **Export & Delete Anytime**: You can export all tracked data as a single JSON file or wipe the entire database with one click in the Settings modal.
 
-9. **Understated End-of-Day Report**:
-   - Summarizes active time, productive time, and distractions without cheerleading, confetti, or artificial streaks.
-   - Closes with: *"Tomorrow starts fresh. Don't waste it."*
+---
 
-10. **Classification Rules & Overrides**:
-    - Manage rules for both `.exe` applications and web domains.
-    - Reclassify any domain or software as Productive, Neutral, or Distraction.
+## 🛠 Useful Terminal Commands
+
+| Action | Command |
+|:---|:---|
+| **Run Desktop App (Dev)** | `npm run tauri dev` |
+| **Run Web Preview** | `npm run dev` |
+| **Build Frontend** | `npm run build` |
+| **Check Rust Code** | `cd src-tauri && cargo check` |
+| **Build Desktop .exe** | `npm run tauri build` |
+
+---
+
+<div align="center">
+
+**YOUR DAY IS DYING**  
+*Time won't wait. Use what you have left.*
+
+</div>
