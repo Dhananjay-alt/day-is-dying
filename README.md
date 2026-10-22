@@ -56,10 +56,12 @@ graph TD
         RustCore[Rust Tracker Loop: 1s Interval]
         LocalDB[(Embedded SQLite: ydid_data.sqlite)]
         BridgeServer[Local HTTP Bridge: 127.0.0.1:41832]
-        Tray[Windows System Tray Menu]
+        Tray[Windows System Tray Menu & Click Events]
+        Registry[Windows Autostart: HKCU Run Registry]
         Win32 --> RustCore
         RustCore --> LocalDB
         BridgeServer --> LocalDB
+        Tray --> RustCore
     end
 
     subgraph "Browser (Chrome / Edge / Brave)"
@@ -67,15 +69,14 @@ graph TD
         Ext -->|POST /event| BridgeServer
     end
 
-    subgraph "Desktop Presentation (Tauri v2 + React 19)"
-        TauriApp[Tauri Native Window: main]
-        FloatingHUD[Movable HUD Instrument: CornerPinWidget]
-        AlwaysOnTop[Always-on-Top Floating Widget: FloatingWidgetView]
+    subgraph "Desktop Native Windows (Tauri v2 + React 19)"
+        MainWin[Native Window: 'main' - Full Command Dashboard]
+        HudWin[Native Window: 'hud' - Independent Always-On-Top Floating HUD]
         WebAudio[Zero-Asset Procedural Web Audio Engine]
-        RustCore -->|IPC Invoke| TauriApp
-        TauriApp --> FloatingHUD
-        TauriApp --> AlwaysOnTop
-        TauriApp --> WebAudio
+        RustCore -->|IPC Invoke & Events| MainWin
+        RustCore -->|IPC Invoke & Events| HudWin
+        MainWin --> WebAudio
+        HudWin --> WebAudio
     end
 ```
 
@@ -150,27 +151,38 @@ src-tauri/target/release/tauri-app.exe
 
 ---
 
-## 🎛 The Movable HUD & Always-On-Top Desktop Widget
+## 🎛 The Native Floating HUD & Windows Desktop Architecture
 
-### 1. Freely Movable Drag Handle
-- The in-window floating HUD widget (`CornerPinWidget.tsx`) is **freely draggable** across your screen.
-- Click and drag the tactile **`GripHorizontal`** handle (<kbd>:::</kbd>) on the widget header to move it anywhere.
-- Your position is automatically saved to `localStorage` (`ydid_hud_position`), so it never resets or gets lost.
-- **Snap to Corner**: Click the **Snap** button (<kbd>⇄</kbd>) anytime to cycle through the 4 window corners.
-- **Pill Dial Mode**: Click the chevron (<kbd>▼</kbd>) to minimize the widget into a compact, draggable pill dial (`4h 44m | 73.6%`).
+### 1. Genuine Native Floating Window (Not a CSS Overlay)
+- The HUD is a **separate native OS desktop window** (`label: "hud"`) configured with `decorations: false`, `transparent: true`, and `alwaysOnTop: true`.
+- You can drag it outside the dashboard window and position it anywhere on your desktop.
+- It floats above **Chrome, VS Code, Slack, games, and terminal windows**.
+- **Draggable Anywhere**: The entire chassis and header grip has `data-tauri-drag-region`, allowing seamless multi-monitor dragging.
+- **Pill Dial Mode**: Click the chevron down button (<kbd>▼</kbd>) to collapse the HUD into a compact floating pill dial (`4h 44m | 73.6%`). Click expand (<kbd>▲</kbd>) to return to the full instrument.
 
-### 2. Stays Alive On Top of Other Apps After Closing the Window
-- In the native desktop app, when you click the window close button (<kbd>✕</kbd>), **the app does not quit**.
-- Tauri intercepts `WindowEvent::CloseRequested`, prevents termination, resizes to a compact floating instrument (`340 × 220`), sets `always_on_top: true`, and switches to **`FloatingWidgetView`**.
-- It floats above **VS Code, terminals, games, Word, and browsers**.
-- The entire widget chassis has `data-tauri-drag-region`, allowing you to freely drag the native window across monitors.
+### 2. Multi-Monitor Persistence & Bounds Safety
+- Whenever the HUD is moved, its physical coordinates `(x, y)` are saved to SQLite (`ydid_data.sqlite`).
+- Upon launch, YDID queries all connected monitors via `available_monitors()`. If saved coordinates fall outside all current displays (e.g. after unplugging an external monitor), it gracefully resets to the bottom-right corner of the primary display.
+- **Reset Position**: Click the reset button (<kbd>↺</kbd>) in the HUD header or Settings to instantly center it in the bottom-right corner.
 
-### 3. Restoring the Full Dashboard
-- Click the **Maximize** button (<kbd>⛶</kbd>) on the widget.
-- Or click the **YDID** icon in your **Windows System Tray** (near the clock) and select **Open Dashboard**.
+### 3. Independent Application Lifecycle
+- When you click the close button (<kbd>✕</kbd>) on the main command dashboard, **the application and HUD keep running**.
+- Tauri intercepts `WindowEvent::CloseRequested` to hide the dashboard without killing the background tracking loop or the HUD.
+- The HUD continues counting down and showing your active application in real time.
 
-### 4. Fully Quitting the Application
-- When you genuinely want to stop the tracker and close everything, right-click the **Windows System Tray icon** and click **Quit YDID**.
+### 4. Windows System Tray Integration
+- The YDID icon lives in the Windows notification area (System Tray).
+- Clicking the tray icon toggles the main command dashboard.
+- Right-clicking the tray icon opens the context menu:
+  - **Open Dashboard**: Shows and focuses the main command window.
+  - **Show / Hide HUD Widget**: Toggles HUD visibility independently.
+  - **Pause / Resume Tracking**: Toggles the 1-second activity tracker.
+  - **Quit YDID**: Completely shuts down the application, HUD, and background workers (`app.exit(0)`).
+
+### 5. Start with Windows (Autostart)
+- YDID can launch automatically when Windows boots.
+- Managed directly via the Windows Registry (`HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run`).
+- Can be enabled during the first-run onboarding wizard or toggled anytime in the **Settings → Desktop** tab.
 
 ---
 
