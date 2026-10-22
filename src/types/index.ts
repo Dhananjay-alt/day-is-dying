@@ -119,4 +119,9 @@ export interface AppSettings {
   browser_tracking_enabled: boolean;
   desktop_tracking_enabled: boolean;
   first_run_completed: boolean;
+  hud_visible?: boolean;
+  hud_position_x?: number | null;
+  hud_position_y?: number | null;
+  hud_always_on_top?: boolean;
+  start_with_windows?: boolean;
 }

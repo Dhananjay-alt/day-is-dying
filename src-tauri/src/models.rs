@@ -167,6 +167,20 @@ pub struct AppSettings {
     pub browser_tracking_enabled: bool,
     pub desktop_tracking_enabled: bool,
     pub first_run_completed: bool,
+    #[serde(default = "default_true")]
+    pub hud_visible: bool,
+    #[serde(default)]
+    pub hud_position_x: Option<i32>,
+    #[serde(default)]
+    pub hud_position_y: Option<i32>,
+    #[serde(default = "default_true")]
+    pub hud_always_on_top: bool,
+    #[serde(default)]
+    pub start_with_windows: bool,
+}
+
+fn default_true() -> bool {
+    true
 }
 
 impl Default for AppSettings {
@@ -185,6 +199,11 @@ impl Default for AppSettings {
             browser_tracking_enabled: true,
             desktop_tracking_enabled: true,
             first_run_completed: false,
+            hud_visible: true,
+            hud_position_x: None,
+            hud_position_y: None,
+            hud_always_on_top: true,
+            start_with_windows: false,
         }
     }
 }
