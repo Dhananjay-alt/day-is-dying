@@ -139,15 +139,26 @@ The extension automatically tracks active browser tab domains (e.g. `youtube.com
 
 ---
 
-### Step 4: Compiling a Standalone Production Executable 📦
-To build a standalone production release installer and `.exe`:
+### Step 4: Compiling & Distributing the Windows Application 📦
+
+To build the optimized production release installer and standalone `.exe`:
 ```bash
 npm run tauri build
 ```
-The compiled standalone binary will be generated at:
-```text
-src-tauri/target/release/tauri-app.exe
-```
+
+This compiles the release binary and packages a standard Windows NSIS setup wizard:
+
+- **Windows Setup Installer**:
+  ```text
+  YourDayIsDying-Setup.exe
+  (also located at src-tauri/target/release/bundle/nsis/YOUR DAY IS DYING_1.0.0_x64-setup.exe)
+  ```
+  *Features a standard Windows install wizard, Start Menu entry, Desktop shortcut, and Windows uninstaller.*
+
+- **Standalone Release Executable**:
+  ```text
+  src-tauri/target/release/tauri-app.exe
+  ```
 
 ---
 
@@ -210,6 +221,7 @@ d:\Productive_project\
 ├── tsconfig.json                # TypeScript compiler configuration
 ├── index.html                   # Single-page application entry point
 ├── README.md                    # Product documentation & running guide
+├── YourDayIsDying-Setup.exe     # Windows NSIS Production Setup Installer
 │
 ├── extension/                   # Chrome / Chromium Manifest V3 Extension
 │   ├── manifest.json            # Extension manifest definition
@@ -219,30 +231,32 @@ d:\Productive_project\
 │   └── icon*.png                # Extension icons
 │
 ├── src-tauri/                   # Rust Backend (Tauri v2)
-│   ├── Cargo.toml               # Rust crates (tauri, rusqlite, tiny_http, chrono, windows)
-│   ├── tauri.conf.json          # Tauri application and window configurations
+│   ├── Cargo.toml               # Rust crates (tauri, rusqlite, winreg, tiny_http, chrono, windows)
+│   ├── tauri.conf.json          # Multi-window definitions, NSIS packaging & icons
 │   └── src/
 │       ├── main.rs              # Desktop executable entry point
-│       ├── lib.rs               # Tauri commands, tray menu & CloseRequested hook
-│       ├── models.rs            # Core data types (DayStatus, Activity, Rules, Debt)
+│       ├── lib.rs               # Multi-window IPC commands, system tray menu & CloseRequested hook
+│       ├── autostart.rs         # Windows registry autostart manager (HKCU Run key)
+│       ├── models.rs            # Core data types (DayStatus, Activity, Rules, Debt, Settings)
 │       ├── db.rs                # SQLite database migrations, chunk coalescing & queries
 │       ├── tracker.rs           # Native Win32 foreground window & idle tick tracking
 │       └── server.rs            # Local HTTP bridge server (127.0.0.1:41832)
 │
 └── src/                         # Frontend Application (React 19 + TypeScript)
     ├── main.tsx                 # React DOM mount point
-    ├── App.tsx                  # Main application orchestrator & view state
+    ├── App.tsx                  # Window view router (?view=hud) & state orchestrator
     ├── index.css                # Dark neomorphism design system & tokens
     │
     ├── types/
     │   └── index.ts             # TypeScript interfaces mirroring Rust models
     │
     ├── services/
-    │   ├── api.ts               # Tauri invoke bridge with browser fallback simulator
+    │   ├── api.ts               # Tauri IPC invoke bridge & desktop window controls
     │   └── audio.ts             # Web Audio procedural synthesis engine
     │
     └── components/
-        ├── Header.tsx           # Brand header, clock, pause & HUD toggle buttons
+        ├── Header.tsx           # Brand header, clock, pause & native HUD toggle button
+        ├── DesktopHudView.tsx   # Native floating HUD instrument (drag region, pill mode)
         ├── CountdownHero.tsx    # Central physical countdown clock & life bar
         ├── CurrentActivityBadge.tsx # Real-time active application & domain badge
         ├── StatsGrid.tsx        # 4 category cards (Productive, Neutral, Distraction, Idle)
@@ -250,13 +264,11 @@ d:\Productive_project\
         ├── OpportunityCostPanel.tsx # Economic potential lost calculator
         ├── TimelineView.tsx     # Chronological daily ribbon with category filtering
         ├── WeeklyAnalytics.tsx  # 7-day rolling report & biggest time sink analysis
-        ├── CornerPinWidget.tsx  # Movable HUD widget with mouse drag & persistent storage
-        ├── FloatingWidgetView.tsx # Compact always-on-top desktop companion view
         ├── FocusModeModal.tsx   # Dedicated focus session countdown with distraction alert
         ├── EndOfDayReportModal.tsx # Honest end-of-day summary without cheerleading
         ├── SignatureNotification.tsx # Context-aware signature non-toast drawer
-        ├── SettingsModal.tsx    # App rules, hourly rate, and sound customization
-        └── OnboardingModal.tsx  # First-run philosophical alignment & initial setup
+        ├── SettingsModal.tsx    # Desktop integration tab, autostart, rules & sounds
+        └── OnboardingModal.tsx  # First-run alignment & start with Windows option
 ```
 
 ---
