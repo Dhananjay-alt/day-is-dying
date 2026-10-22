@@ -25,8 +25,7 @@ import { EndOfDayReportModal } from './components/EndOfDayReportModal';
 import { SignatureNotification } from './components/SignatureNotification';
 import { SettingsModal } from './components/SettingsModal';
 import { OnboardingModal } from './components/OnboardingModal';
-import { FloatingWidgetView } from './components/FloatingWidgetView';
-import { CornerPinWidget } from './components/CornerPinWidget';
+import { DesktopHudView } from './components/DesktopHudView';
 
 export function App() {
   const [dayStatus, setDayStatus] = useState<DayStatus | null>(null);
@@ -38,21 +37,15 @@ export function App() {
   const [rules, setRules] = useState<ActivityRule[]>([]);
   const [isPaused, setIsPaused] = useState(false);
 
-  // Modals & View States
-  const [isWidgetMode, setIsWidgetMode] = useState(() => {
+  // Window View & State
+  const [isHudWindow] = useState(() => {
     if (typeof window !== 'undefined') {
       const p = new URLSearchParams(window.location.search);
-      return p.get('view') === 'widget';
+      return p.get('view') === 'hud' || p.get('view') === 'widget';
     }
     return false;
   });
-  const [isCornerWidgetVisible, setIsCornerWidgetVisible] = useState(() => {
-    try {
-      return localStorage.getItem('ydid_corner_visible') !== 'false';
-    } catch {
-      return true;
-    }
-  });
+  const [isHudVisible, setIsHudVisible] = useState(true);
   const [isFocusOpen, setIsFocusOpen] = useState(false);
   const [focusInitialMinutes, setFocusInitialMinutes] = useState(25);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -61,24 +54,28 @@ export function App() {
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
   const [activeNotification, setActiveNotification] = useState<IntervalAnalysis | null>(null);
 
-  // Listen for native Tauri window events (e.g. CloseRequested transitions into floating widget on top of other apps)
+  // Listen for native Tauri events (tray pause toggle, HUD visibility events)
   useEffect(() => {
-    let unlisten: (() => void) | undefined;
+    const unlisteners: (() => void)[] = [];
     if (isTauri()) {
       import('@tauri-apps/api/event')
-        .then(({ listen }) => {
-          listen('switch-to-widget-mode', () => {
-            setIsWidgetMode(true);
-          }).then((fn) => {
-            unlisten = fn;
+        .then(async ({ listen }) => {
+          const u1 = await listen<boolean>('hud-visibility-changed', (event) => {
+            setIsHudVisible(event.payload);
           });
+          unlisteners.push(u1);
+
+          const u2 = await listen<boolean>('pause-changed', (event) => {
+            setIsPaused(event.payload);
+          });
+          unlisteners.push(u2);
         })
         .catch((err) => {
-          console.warn('Failed to register switch-to-widget-mode listener:', err);
+          console.warn('Failed to register Tauri event listeners:', err);
         });
     }
     return () => {
-      if (unlisten) unlisten();
+      unlisteners.forEach((fn) => fn());
     };
   }, []);
 
@@ -104,6 +101,9 @@ export function App() {
       setDayStatus(initDay);
       setCurrentActivity(initAct);
       setIsPaused(initAct.is_tracking_paused);
+      if (typeof initSettings.hud_visible === 'boolean') {
+        setIsHudVisible(initSettings.hud_visible);
+      }
 
       // Sound settings configuration
       soundEngine.setVolume(initSettings.sound_volume);
@@ -187,20 +187,9 @@ export function App() {
     }
   };
 
-  const handleToggleWidgetMode = async () => {
-    const target = !isWidgetMode;
-    setIsWidgetMode(target);
-    await api.setWidgetMode(target);
-  };
-
-  const handleToggleCornerWidget = (target?: boolean) => {
-    setIsCornerWidgetVisible((prev) => {
-      const next = typeof target === 'boolean' ? target : !prev;
-      try {
-        localStorage.setItem('ydid_corner_visible', String(next));
-      } catch {}
-      return next;
-    });
+  const handleToggleHud = async () => {
+    const next = await api.toggleHud();
+    setIsHudVisible(next);
   };
 
   const handleStartFocus = (mins: number) => {
@@ -268,16 +257,19 @@ export function App() {
   const handleOnboardingComplete = async (onboardConfig: {
     reminderInterval: number;
     trackBrowser: boolean;
+    startWithWindows: boolean;
   }) => {
     if (!settings) return;
     const updated: AppSettings = {
       ...settings,
       reminder_interval_minutes: onboardConfig.reminderInterval,
       browser_tracking_enabled: onboardConfig.trackBrowser,
+      start_with_windows: onboardConfig.startWithWindows,
       first_run_completed: true,
     };
     setSettings(updated);
     await api.saveSettings(updated);
+    await api.setAutostartEnabled(onboardConfig.startWithWindows);
     setIsOnboardingOpen(false);
   };
 
@@ -384,17 +376,17 @@ export function App() {
     }, 10000);
   };
 
-  // If in Floating Widget Mode, render the tactile compact widget
-  if (isWidgetMode && dayStatus && currentActivity) {
+  // If in Native Desktop HUD Window view, render the dedicated Desktop HUD instrument
+  if (isHudWindow && dayStatus && currentActivity) {
     return (
-      <FloatingWidgetView
+      <DesktopHudView
         dayStatus={dayStatus}
         currentActivity={currentActivity}
         isPaused={isPaused}
         onTogglePause={handleTogglePause}
-        onExpandDashboard={handleToggleWidgetMode}
         activeNotification={activeNotification}
         onDismissNotification={() => setActiveNotification(null)}
+        onStartFocus={handleStartFocus}
       />
     );
   }
@@ -411,9 +403,8 @@ export function App() {
           onOpenSettings={() => setIsSettingsOpen(true)}
           onOpenEndOfDay={() => setIsEndOfDayOpen(true)}
           onOpenNotificationTest={() => setIsOpenNotificationTester(true)}
-          onToggleWidgetMode={handleToggleWidgetMode}
-          isCornerWidgetVisible={isCornerWidgetVisible}
-          onToggleCornerWidget={() => handleToggleCornerWidget()}
+          isHudVisible={isHudVisible}
+          onToggleHud={handleToggleHud}
         />
 
         {/* Central Physical Countdown Instrument & Life Bar */}
@@ -463,18 +454,6 @@ export function App() {
           <code className="text-[#808096]">http://127.0.0.1:41832</code>
         </div>
       </footer>
-
-      {/* Pinned HUD Widget (Freely movable anywhere on screen) */}
-      {isCornerWidgetVisible && dayStatus && currentActivity && (
-        <CornerPinWidget
-          dayStatus={dayStatus}
-          currentActivity={currentActivity}
-          isPaused={isPaused}
-          onTogglePause={handleTogglePause}
-          onStartFocus={() => handleStartFocus(25)}
-          onClose={() => handleToggleCornerWidget(false)}
-        />
-      )}
 
       {/* Modals & Overlays */}
       {currentActivity && (

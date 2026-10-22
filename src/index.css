@@ -12,7 +12,7 @@
 
   body {
     font-family: var(--font-display);
-    background-color: var(--neu-bg);
+    background-color: transparent;
     color: #e4e4e7;
     margin: 0;
     padding: 0;
