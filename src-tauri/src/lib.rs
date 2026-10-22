@@ -2,11 +2,12 @@ pub mod models;
 pub mod db;
 pub mod tracker;
 pub mod server;
+pub mod autostart;
 
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 use chrono::{Local, NaiveTime, Timelike};
-use tauri::{Emitter, Manager, State, Window};
+use tauri::{Emitter, Manager, State};
 use tauri::menu::{Menu, MenuItem};
 use tauri::tray::{TrayIconBuilder, TrayIconEvent};
 
@@ -181,26 +182,161 @@ fn export_data_json(state: State<'_, AppContext>) -> String {
 }
 
 #[tauri::command]
-fn hide_to_tray(window: Window) -> Result<(), String> {
-    window.hide().map_err(|e| e.to_string())
+fn open_dashboard(app: tauri::AppHandle) -> Result<(), String> {
+    if let Some(w) = app.get_webview_window("main") {
+        let _ = w.show();
+        let _ = w.set_focus();
+    }
+    Ok(())
 }
 
 #[tauri::command]
-fn set_widget_mode(window: Window, widget: bool) -> Result<(), String> {
-    if widget {
-        let _ = window.set_size(tauri::Size::Logical(tauri::LogicalSize {
-            width: 340.0,
-            height: 220.0,
-        }));
-        let _ = window.set_always_on_top(true);
-        let _ = window.set_resizable(true);
+fn close_dashboard(app: tauri::AppHandle) -> Result<(), String> {
+    if let Some(w) = app.get_webview_window("main") {
+        let _ = w.hide();
+    }
+    Ok(())
+}
+
+#[tauri::command]
+fn is_dashboard_open(app: tauri::AppHandle) -> bool {
+    if let Some(w) = app.get_webview_window("main") {
+        w.is_visible().unwrap_or(false)
     } else {
-        let _ = window.set_size(tauri::Size::Logical(tauri::LogicalSize {
-            width: 1080.0,
-            height: 760.0,
-        }));
-        let _ = window.set_always_on_top(false);
-        let _ = window.set_resizable(true);
+        false
+    }
+}
+
+#[tauri::command]
+fn set_hud_visible(app: tauri::AppHandle, state: State<'_, AppContext>, visible: bool) -> Result<(), String> {
+    let mut settings = state.db.get_settings();
+    settings.hud_visible = visible;
+    state.db.save_settings(&settings);
+    if let Some(w) = app.get_webview_window("hud") {
+        if visible {
+            let _ = w.show();
+            let _ = w.set_focus();
+        } else {
+            let _ = w.hide();
+        }
+    }
+    let _ = app.emit("hud-visibility-changed", visible);
+    Ok(())
+}
+
+#[tauri::command]
+fn toggle_hud(app: tauri::AppHandle, state: State<'_, AppContext>) -> Result<bool, String> {
+    let is_vis = if let Some(w) = app.get_webview_window("hud") {
+        w.is_visible().unwrap_or(false)
+    } else {
+        false
+    };
+    let target = !is_vis;
+    set_hud_visible(app, state, target)?;
+    Ok(target)
+}
+
+#[tauri::command]
+fn is_hud_visible(app: tauri::AppHandle) -> bool {
+    if let Some(w) = app.get_webview_window("hud") {
+        w.is_visible().unwrap_or(false)
+    } else {
+        false
+    }
+}
+
+#[tauri::command]
+fn set_hud_always_on_top(app: tauri::AppHandle, state: State<'_, AppContext>, on_top: bool) -> Result<(), String> {
+    let mut settings = state.db.get_settings();
+    settings.hud_always_on_top = on_top;
+    state.db.save_settings(&settings);
+    if let Some(w) = app.get_webview_window("hud") {
+        let _ = w.set_always_on_top(on_top);
+    }
+    let _ = app.emit("hud-always-on-top-changed", on_top);
+    Ok(())
+}
+
+#[tauri::command]
+fn save_hud_position(state: State<'_, AppContext>, x: i32, y: i32) -> Result<(), String> {
+    let mut settings = state.db.get_settings();
+    settings.hud_position_x = Some(x);
+    settings.hud_position_y = Some(y);
+    state.db.save_settings(&settings);
+    Ok(())
+}
+
+#[tauri::command]
+fn reset_hud_position(app: tauri::AppHandle, state: State<'_, AppContext>) -> Result<(), String> {
+    if let Some(w) = app.get_webview_window("hud") {
+        if let Ok(Some(monitor)) = w.primary_monitor() {
+            let size = monitor.size();
+            let scale = monitor.scale_factor();
+            let hud_w = (320.0 * scale) as i32;
+            let hud_h = (220.0 * scale) as i32;
+            let margin = (24.0 * scale) as i32;
+            let target_x = size.width as i32 - hud_w - margin;
+            let target_y = size.height as i32 - hud_h - margin - 40;
+            let _ = w.set_position(tauri::Position::Physical(tauri::PhysicalPosition::new(target_x, target_y)));
+
+            let mut settings = state.db.get_settings();
+            settings.hud_position_x = Some(target_x);
+            settings.hud_position_y = Some(target_y);
+            state.db.save_settings(&settings);
+        }
+    }
+    Ok(())
+}
+
+#[tauri::command]
+fn set_hud_size(app: tauri::AppHandle, minimized: bool) -> Result<(), String> {
+    if let Some(w) = app.get_webview_window("hud") {
+        let (width, height) = if minimized {
+            (230.0, 56.0)
+        } else {
+            (320.0, 220.0)
+        };
+        let _ = w.set_size(tauri::Size::Logical(tauri::LogicalSize { width, height }));
+    }
+    Ok(())
+}
+
+#[tauri::command]
+fn set_autostart_enabled(state: State<'_, AppContext>, enable: bool) -> Result<(), String> {
+    autostart::set_autostart(enable)?;
+    let mut settings = state.db.get_settings();
+    settings.start_with_windows = enable;
+    state.db.save_settings(&settings);
+    Ok(())
+}
+
+#[tauri::command]
+fn get_autostart_enabled() -> bool {
+    autostart::get_autostart()
+}
+
+#[tauri::command]
+fn quit_app(app: tauri::AppHandle) {
+    app.exit(0);
+}
+
+#[tauri::command]
+fn hide_to_tray(app: tauri::AppHandle) -> Result<(), String> {
+    if let Some(w) = app.get_webview_window("main") {
+        let _ = w.hide();
+    }
+    Ok(())
+}
+
+#[tauri::command]
+fn set_widget_mode(app: tauri::AppHandle, state: State<'_, AppContext>, widget: bool) -> Result<(), String> {
+    if widget {
+        if let Some(w) = app.get_webview_window("main") {
+            let _ = w.hide();
+        }
+        let _ = set_hud_visible(app, state, true);
+    } else {
+        let _ = open_dashboard(app);
     }
     Ok(())
 }
@@ -349,13 +485,55 @@ pub fn run() {
                 });
             }
 
+            // Configure and position native HUD window based on saved desktop settings
+            if let Some(hud_win) = app_handle.get_webview_window("hud") {
+                let settings = db.get_settings();
+                let mut positioned = false;
+
+                if let (Some(x), Some(y)) = (settings.hud_position_x, settings.hud_position_y) {
+                    if let Ok(monitors) = hud_win.available_monitors() {
+                        for m in monitors {
+                            let m_pos = m.position();
+                            let m_size = m.size();
+                            if x >= m_pos.x && x < (m_pos.x + m_size.width as i32 - 40)
+                               && y >= m_pos.y && y < (m_pos.y + m_size.height as i32 - 40) {
+                                let _ = hud_win.set_position(tauri::Position::Physical(tauri::PhysicalPosition::new(x, y)));
+                                positioned = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if !positioned {
+                    if let Ok(Some(primary)) = hud_win.primary_monitor() {
+                        let scale = primary.scale_factor();
+                        let size = primary.size();
+                        let hud_w = (320.0 * scale) as i32;
+                        let hud_h = (220.0 * scale) as i32;
+                        let margin = (24.0 * scale) as i32;
+                        let target_x = size.width as i32 - hud_w - margin;
+                        let target_y = size.height as i32 - hud_h - margin - 40;
+                        let _ = hud_win.set_position(tauri::Position::Physical(tauri::PhysicalPosition::new(target_x, target_y)));
+                    }
+                }
+
+                let _ = hud_win.set_always_on_top(settings.hud_always_on_top);
+
+                if !settings.hud_visible {
+                    let _ = hud_win.hide();
+                } else {
+                    let _ = hud_win.show();
+                }
+            }
+
             // Setup System Tray
             let tray_menu = Menu::with_items(
                 app_handle,
                 &[
                     &MenuItem::with_id(app_handle, "title", "YOUR DAY IS DYING", false, None::<&str>)?,
                     &MenuItem::with_id(app_handle, "open", "Open Dashboard", true, None::<&str>)?,
-                    &MenuItem::with_id(app_handle, "widget", "Floating Widget Mode", true, None::<&str>)?,
+                    &MenuItem::with_id(app_handle, "toggle_hud", "Show / Hide HUD Widget", true, None::<&str>)?,
                     &MenuItem::with_id(app_handle, "toggle_pause", "Pause / Resume Tracking", true, None::<&str>)?,
                     &MenuItem::with_id(app_handle, "quit", "Quit YDID", true, None::<&str>)?,
                 ],
@@ -370,20 +548,18 @@ pub fn run() {
                             if let Some(w) = app.get_webview_window("main") {
                                 let _ = w.show();
                                 let _ = w.set_focus();
-                                let _ = set_widget_mode(w.as_ref().window(), false);
                             }
                         }
-                        "widget" => {
-                            if let Some(w) = app.get_webview_window("main") {
-                                let _ = w.show();
-                                let _ = w.set_focus();
-                                let _ = set_widget_mode(w.as_ref().window(), true);
-                            }
+                        "toggle_hud" => {
+                            let state: State<AppContext> = app.state();
+                            let _ = toggle_hud(app.clone(), state);
                         }
                         "toggle_pause" => {
                             let state: State<AppContext> = app.state();
                             let mut p = state.is_paused.lock().unwrap();
                             *p = !*p;
+                            let new_val = *p;
+                            let _ = app.emit("pause-changed", new_val);
                         }
                         "quit" => {
                             app.exit(0);
@@ -395,8 +571,12 @@ pub fn run() {
                     if let TrayIconEvent::Click { .. } = event {
                         let app = tray.app_handle();
                         if let Some(w) = app.get_webview_window("main") {
-                            let _ = w.show();
-                            let _ = w.set_focus();
+                            if w.is_visible().unwrap_or(false) {
+                                let _ = w.hide();
+                            } else {
+                                let _ = w.show();
+                                let _ = w.set_focus();
+                            }
                         }
                     }
                 })
@@ -429,14 +609,50 @@ pub fn run() {
             delete_all_data,
             export_data_json,
             set_widget_mode,
-            hide_to_tray
+            hide_to_tray,
+            open_dashboard,
+            close_dashboard,
+            is_dashboard_open,
+            set_hud_visible,
+            toggle_hud,
+            is_hud_visible,
+            set_hud_always_on_top,
+            save_hud_position,
+            reset_hud_position,
+            set_hud_size,
+            set_autostart_enabled,
+            get_autostart_enabled,
+            quit_app
         ])
         .on_window_event(|window, event| {
-            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
-                // Keep widget alive on top of other applications even after closing window
-                api.prevent_close();
-                let _ = set_widget_mode(window.clone(), true);
-                let _ = window.emit("switch-to-widget-mode", ());
+            match event {
+                tauri::WindowEvent::CloseRequested { api, .. } => {
+                    api.prevent_close();
+                    if window.label() == "main" {
+                        // Closing main dashboard hides it, while the native HUD widget continues running!
+                        let _ = window.hide();
+                    } else if window.label() == "hud" {
+                        // Closing HUD hides it
+                        let _ = window.hide();
+                        let app = window.app_handle();
+                        let state: State<AppContext> = app.state();
+                        let mut settings = state.db.get_settings();
+                        settings.hud_visible = false;
+                        state.db.save_settings(&settings);
+                        let _ = app.emit("hud-visibility-changed", false);
+                    }
+                }
+                tauri::WindowEvent::Moved(physical_pos) => {
+                    if window.label() == "hud" {
+                        let app = window.app_handle();
+                        let state: State<AppContext> = app.state();
+                        let mut settings = state.db.get_settings();
+                        settings.hud_position_x = Some(physical_pos.x);
+                        settings.hud_position_y = Some(physical_pos.y);
+                        state.db.save_settings(&settings);
+                    }
+                }
+                _ => {}
             }
         })
         .run(tauri::generate_context!())
