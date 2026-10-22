@@ -344,6 +344,7 @@ export const api = {
     if (isTauri()) {
       try {
         await invoke('set_widget_mode', { widget });
+        return;
       } catch (e) {
         console.warn('Tauri invoke failed:', e);
       }
@@ -354,9 +355,161 @@ export const api = {
     if (isTauri()) {
       try {
         await invoke('hide_to_tray');
+        return;
       } catch (e) {
         console.warn('Tauri invoke failed:', e);
       }
     }
   },
+
+  async openDashboard(): Promise<void> {
+    if (isTauri()) {
+      try {
+        await invoke('open_dashboard');
+        return;
+      } catch (e) {
+        console.warn('Tauri invoke failed:', e);
+      }
+    }
+  },
+
+  async closeDashboard(): Promise<void> {
+    if (isTauri()) {
+      try {
+        await invoke('close_dashboard');
+        return;
+      } catch (e) {
+        console.warn('Tauri invoke failed:', e);
+      }
+    }
+  },
+
+  async isDashboardOpen(): Promise<boolean> {
+    if (isTauri()) {
+      try {
+        return await invoke<boolean>('is_dashboard_open');
+      } catch (e) {
+        console.warn('Tauri invoke failed:', e);
+      }
+    }
+    return true;
+  },
+
+  async setHudVisible(visible: boolean): Promise<void> {
+    if (isTauri()) {
+      try {
+        await invoke('set_hud_visible', { visible });
+        return;
+      } catch (e) {
+        console.warn('Tauri invoke failed:', e);
+      }
+    }
+    mockSettings.hud_visible = visible;
+  },
+
+  async toggleHud(): Promise<boolean> {
+    if (isTauri()) {
+      try {
+        return await invoke<boolean>('toggle_hud');
+      } catch (e) {
+        console.warn('Tauri invoke failed:', e);
+      }
+    }
+    mockSettings.hud_visible = !mockSettings.hud_visible;
+    return !!mockSettings.hud_visible;
+  },
+
+  async isHudVisible(): Promise<boolean> {
+    if (isTauri()) {
+      try {
+        return await invoke<boolean>('is_hud_visible');
+      } catch (e) {
+        console.warn('Tauri invoke failed:', e);
+      }
+    }
+    return !!mockSettings.hud_visible;
+  },
+
+  async setHudAlwaysOnTop(onTop: boolean): Promise<void> {
+    if (isTauri()) {
+      try {
+        await invoke('set_hud_always_on_top', { onTop });
+        return;
+      } catch (e) {
+        console.warn('Tauri invoke failed:', e);
+      }
+    }
+    mockSettings.hud_always_on_top = onTop;
+  },
+
+  async saveHudPosition(x: number, y: number): Promise<void> {
+    if (isTauri()) {
+      try {
+        await invoke('save_hud_position', { x, y });
+        return;
+      } catch (e) {
+        console.warn('Tauri invoke failed:', e);
+      }
+    }
+    mockSettings.hud_position_x = x;
+    mockSettings.hud_position_y = y;
+  },
+
+  async resetHudPosition(): Promise<void> {
+    if (isTauri()) {
+      try {
+        await invoke('reset_hud_position');
+        return;
+      } catch (e) {
+        console.warn('Tauri invoke failed:', e);
+      }
+    }
+  },
+
+  async setHudSize(minimized: boolean): Promise<void> {
+    if (isTauri()) {
+      try {
+        await invoke('set_hud_size', { minimized });
+        return;
+      } catch (e) {
+        console.warn('Tauri invoke failed:', e);
+      }
+    }
+  },
+
+  async setAutostartEnabled(enable: boolean): Promise<void> {
+    if (isTauri()) {
+      try {
+        await invoke('set_autostart_enabled', { enable });
+        return;
+      } catch (e) {
+        console.warn('Tauri invoke failed:', e);
+      }
+    }
+    mockSettings.start_with_windows = enable;
+  },
+
+  async getAutostartEnabled(): Promise<boolean> {
+    if (isTauri()) {
+      try {
+        return await invoke<boolean>('get_autostart_enabled');
+      } catch (e) {
+        console.warn('Tauri invoke failed:', e);
+      }
+    }
+    return !!mockSettings.start_with_windows;
+  },
+
+  async quitApp(): Promise<void> {
+    if (isTauri()) {
+      try {
+        await invoke('quit_app');
+        return;
+      } catch (e) {
+        console.warn('Tauri invoke failed:', e);
+      }
+    }
+    console.log('quitApp called (browser)');
+  },
 };
+
