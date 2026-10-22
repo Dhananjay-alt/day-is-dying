@@ -294,6 +294,12 @@ d:\Productive_project\
 
 ---
 
+## 📄 License
+
+MIT License • Free and open-source.
+
+---
+
 <div align="center">
 
 **YOUR DAY IS DYING**  
