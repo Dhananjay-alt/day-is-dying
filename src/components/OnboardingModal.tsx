@@ -4,13 +4,14 @@ import { soundEngine } from '../services/audio';
 
 interface OnboardingModalProps {
   isOpen: boolean;
-  onComplete: (settings: { reminderInterval: number; trackBrowser: boolean }) => void;
+  onComplete: (settings: { reminderInterval: number; trackBrowser: boolean; startWithWindows: boolean }) => void;
 }
 
 export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onComplete }) => {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [reminderInterval, setReminderInterval] = useState(30);
   const [trackBrowser, setTrackBrowser] = useState(true);
+  const [startWithWindows, setStartWithWindows] = useState(true);
 
   if (!isOpen) return null;
 
@@ -20,7 +21,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onComp
       setStep((prev) => (prev + 1) as any);
     } else {
       soundEngine.playDistractionHit();
-      onComplete({ reminderInterval, trackBrowser });
+      onComplete({ reminderInterval, trackBrowser, startWithWindows });
     }
   };
 
@@ -173,8 +174,26 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onComp
               </p>
             </div>
             <p className="text-xs font-mono text-[#787988]">
-              YDID is now calibrated. You can toggle into the always-on-top floating desktop widget at any moment.
+              YDID is now calibrated. It runs unobtrusively in your system tray and floating desktop widget.
             </p>
+
+            {/* Start with Windows toggle */}
+            <div
+              onClick={() => setStartWithWindows(!startWithWindows)}
+              className="neu-sunken p-3.5 rounded-2xl flex items-center justify-between cursor-pointer text-left hover:border-white/10 transition-colors"
+            >
+              <div>
+                <div className="font-mono text-xs font-bold text-white">Start automatically with Windows</div>
+                <div className="text-[10px] text-[#787988]">Launch in background on boot</div>
+              </div>
+              <input
+                type="checkbox"
+                checked={startWithWindows}
+                onChange={(e) => setStartWithWindows(e.target.checked)}
+                className="w-4 h-4 rounded accent-red-500 cursor-pointer"
+              />
+            </div>
+
             <button
               onClick={handleNext}
               className="neu-btn neu-btn-accent w-full py-4 font-mono font-extrabold text-sm tracking-widest rounded-2xl shadow-xl"

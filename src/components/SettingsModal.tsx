@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { X, Volume2, ShieldCheck, Download, Trash2, Plus, Sliders, Clock } from 'lucide-react';
+import { X, Volume2, ShieldCheck, Download, Trash2, Plus, Sliders, Clock, Monitor, Power, RotateCcw, Pin, Eye } from 'lucide-react';
 import { AppSettings, ActivityRule, Category } from '../types';
 import { soundEngine } from '../services/audio';
+import { api } from '../services/api';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -26,7 +27,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onDeleteAllData,
   onExportData,
 }) => {
-  const [activeTab, setActiveTab] = useState<'general' | 'notifications' | 'rules' | 'privacy'>('general');
+  const [activeTab, setActiveTab] = useState<'general' | 'desktop' | 'notifications' | 'rules' | 'privacy'>('general');
   const [currentSettings, setCurrentSettings] = useState<AppSettings>(settings);
 
   // New rule inputs
@@ -36,8 +37,17 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleSave = () => {
+  const handleSave = async () => {
     soundEngine.playFocusClick();
+    if (currentSettings.start_with_windows !== settings.start_with_windows) {
+      await api.setAutostartEnabled(!!currentSettings.start_with_windows);
+    }
+    if (currentSettings.hud_always_on_top !== settings.hud_always_on_top) {
+      await api.setHudAlwaysOnTop(!!currentSettings.hud_always_on_top);
+    }
+    if (currentSettings.hud_visible !== settings.hud_visible) {
+      await api.setHudVisible(!!currentSettings.hud_visible);
+    }
     onSaveSettings(currentSettings);
     onClose();
   };
@@ -70,7 +80,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         {/* Tab navigation */}
         <div className="px-6 pt-4">
           <div className="neu-sunken p-1.5 rounded-2xl flex font-mono text-xs">
-            {(['general', 'notifications', 'rules', 'privacy'] as const).map((tab) => (
+            {(['general', 'desktop', 'notifications', 'rules', 'privacy'] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -183,6 +193,134 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                       className="w-full bg-[#0a0b0e] border border-white/5 rounded-xl p-2.5 text-white"
                     />
                   </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'desktop' && (
+            <div className="space-y-5">
+              {/* Windows Startup */}
+              <div className="neu-sunken p-5 rounded-2xl">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <Monitor className="w-4 h-4 text-emerald-400" />
+                    <h4 className="font-bold text-white uppercase">Start with Windows</h4>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={!!currentSettings.start_with_windows}
+                    onChange={(e) =>
+                      setCurrentSettings({
+                        ...currentSettings,
+                        start_with_windows: e.target.checked,
+                      })
+                    }
+                    className="w-4 h-4 rounded accent-emerald-500 cursor-pointer"
+                  />
+                </div>
+                <p className="text-[11px] text-[#a1a1aa] leading-relaxed">
+                  Automatically launches YDID quietly in the background and restores your floating HUD whenever you log into Windows.
+                </p>
+              </div>
+
+              {/* Floating HUD Widget Settings */}
+              <div className="neu-sunken p-5 rounded-2xl space-y-4">
+                <h4 className="font-bold text-white uppercase flex items-center gap-2">
+                  <Pin className="w-4 h-4 text-amber-400" />
+                  Independent Desktop HUD Widget
+                </h4>
+
+                <div className="flex items-center justify-between py-1 border-b border-white/[0.04]">
+                  <div>
+                    <div className="font-bold text-white text-xs">HUD Visible on Startup</div>
+                    <div className="text-[10px] text-[#71727e]">Keep HUD visible independently of the command dashboard</div>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={currentSettings.hud_visible !== false}
+                    onChange={(e) =>
+                      setCurrentSettings({
+                        ...currentSettings,
+                        hud_visible: e.target.checked,
+                      })
+                    }
+                    className="w-4 h-4 rounded accent-amber-500 cursor-pointer"
+                  />
+                </div>
+
+                <div className="flex items-center justify-between py-1 border-b border-white/[0.04]">
+                  <div>
+                    <div className="font-bold text-white text-xs">Always on Top</div>
+                    <div className="text-[10px] text-[#71727e]">Float over full-screen browser tabs, IDEs, and other apps</div>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={currentSettings.hud_always_on_top !== false}
+                    onChange={(e) =>
+                      setCurrentSettings({
+                        ...currentSettings,
+                        hud_always_on_top: e.target.checked,
+                      })
+                    }
+                    className="w-4 h-4 rounded accent-amber-500 cursor-pointer"
+                  />
+                </div>
+
+                <div className="pt-2 flex items-center justify-between">
+                  <div>
+                    <div className="font-bold text-white text-xs">Reset HUD Screen Position</div>
+                    <div className="text-[10px] text-[#71727e]">Reposition to primary display's bottom-right corner</div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      soundEngine.playFocusClick();
+                      await api.resetHudPosition();
+                    }}
+                    className="neu-btn px-3 py-1.5 text-xs text-white flex items-center gap-1.5 rounded-xl"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>RESET</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Application Lifecycle */}
+              <div className="neu-sunken p-5 rounded-2xl space-y-3">
+                <h4 className="font-bold text-white uppercase flex items-center gap-2">
+                  <Power className="w-4 h-4 text-red-400" />
+                  Application Lifecycle & System Tray
+                </h4>
+                <p className="text-[11px] text-[#a1a1aa] leading-relaxed">
+                  Closing the main dashboard window hides it to the Windows System Tray while the HUD continues monitoring your time.
+                </p>
+                <div className="pt-2 flex gap-3">
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      soundEngine.playFocusClick();
+                      onClose();
+                      await api.closeDashboard();
+                    }}
+                    className="neu-btn flex-1 py-2.5 text-white flex items-center justify-center gap-2 rounded-xl"
+                  >
+                    <Eye className="w-3.5 h-3.5 text-amber-400" />
+                    <span>MINIMIZE TO TRAY</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (window.confirm('Completely terminate YOUR DAY IS DYING and all background trackers?')) {
+                        soundEngine.playDistractionHit();
+                        await api.quitApp();
+                      }
+                    }}
+                    className="neu-btn neu-btn-danger flex-1 py-2.5 text-red-400 flex items-center justify-center gap-2 rounded-xl"
+                  >
+                    <Power className="w-3.5 h-3.5 text-red-500" />
+                    <span>QUIT YDID COMPLETELY</span>
+                  </button>
                 </div>
               </div>
             </div>

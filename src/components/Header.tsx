@@ -1,4 +1,4 @@
-import { Play, Pause, Maximize2, Settings, Crosshair, Bell, FileText, Pin } from 'lucide-react';
+import { Play, Pause, Settings, Crosshair, Bell, FileText, Pin } from 'lucide-react';
 import { soundEngine } from '../services/audio';
 
 interface HeaderProps {
@@ -9,9 +9,8 @@ interface HeaderProps {
   onOpenSettings: () => void;
   onOpenEndOfDay: () => void;
   onOpenNotificationTest: () => void;
-  onToggleWidgetMode: () => void;
-  isCornerWidgetVisible?: boolean;
-  onToggleCornerWidget?: () => void;
+  isHudVisible?: boolean;
+  onToggleHud?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -22,9 +21,8 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenSettings,
   onOpenEndOfDay,
   onOpenNotificationTest,
-  onToggleWidgetMode,
-  isCornerWidgetVisible = true,
-  onToggleCornerWidget,
+  isHudVisible = true,
+  onToggleHud,
 }) => {
   return (
     <header className="neu-panel px-6 py-4 mb-6 flex flex-wrap items-center justify-between gap-4">
@@ -115,33 +113,20 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="hidden lg:inline">REPORT</span>
           </button>
 
-          {/* Floating Widget Mode (Compact Window) */}
-          <button
-            onClick={() => {
-              soundEngine.playNormalTick();
-              onToggleWidgetMode();
-            }}
-            className="neu-btn px-3 py-1.5 text-xs text-[#e4e4e7] flex items-center gap-1.5"
-            title="Switch to Compact Desktop Widget View"
-          >
-            <Maximize2 className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">MINI</span>
-          </button>
-
-          {/* Floating Corner Pin HUD */}
-          {onToggleCornerWidget && (
+          {/* Native Desktop HUD Widget Toggle */}
+          {onToggleHud && (
             <button
               onClick={() => {
                 soundEngine.playFocusClick();
-                onToggleCornerWidget();
+                onToggleHud();
               }}
               className={`neu-btn px-3 py-1.5 text-xs flex items-center gap-1.5 ${
-                isCornerWidgetVisible ? 'text-amber-400' : 'text-[#888998]'
+                isHudVisible ? 'text-amber-400 border border-amber-500/30' : 'text-[#888998]'
               }`}
-              title={isCornerWidgetVisible ? 'Hide Corner Pin HUD' : 'Show Corner Pin HUD'}
+              title={isHudVisible ? 'Hide Desktop HUD Widget (Running)' : 'Show Desktop HUD Widget'}
             >
               <Pin className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">PIN HUD</span>
+              <span className="hidden sm:inline">HUD WIDGET</span>
             </button>
           )}
 
