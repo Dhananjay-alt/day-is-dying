@@ -392,68 +392,83 @@ export function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#1e2028] text-[#e4e4e7] p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto flex flex-col justify-between overflow-x-hidden">
-      <div>
-        {/* Navigation & Header */}
-        <Header
-          currentTime={dayStatus?.current_time || '18:19:17'}
-          isPaused={isPaused}
-          onTogglePause={handleTogglePause}
-          onOpenFocus={() => setIsFocusOpen(true)}
-          onOpenSettings={() => setIsSettingsOpen(true)}
-          onOpenEndOfDay={() => setIsEndOfDayOpen(true)}
-          onOpenNotificationTest={() => setIsOpenNotificationTester(true)}
-          isHudVisible={isHudVisible}
-          onToggleHud={handleToggleHud}
-        />
+    <div className="min-h-screen bg-[#000000] text-[#ebebeb] p-3 sm:p-6 lg:p-8 flex flex-col items-center justify-start relative overflow-x-hidden selection:bg-[#ccff00] selection:text-black">
+      {/* Decorative Glow Spheres with 120px Blur Filter */}
+      <div className="glow-sphere-lime -top-24 -left-24 z-0 opacity-60" />
+      <div className="glow-sphere-emerald top-1/2 -right-32 z-0 opacity-40" />
 
-        {/* Central Physical Countdown Instrument & Life Bar */}
-        {dayStatus && <CountdownHero dayStatus={dayStatus} />}
+      {/* Floating Shell Container: max-w-[1600px], rounded-[2.5rem], ring-1 ring-white/10, shadow-2xl, #0c0c0c */}
+      <div className="w-full max-w-[1600px] rounded-[2.5rem] ring-1 ring-white/10 shadow-2xl relative overflow-hidden bg-[#0c0c0c] bg-grid-60 p-4 sm:p-7 lg:p-9 flex flex-col justify-between min-h-[92vh]">
+        {/* 15% Opacity Noise SVG Overlay */}
+        <div className="absolute inset-0 noise-overlay pointer-events-none z-0" />
 
-        {/* Currently Tracked Desktop Window / Browser Badge */}
-        {currentActivity && <CurrentActivityBadge activity={currentActivity} />}
+        <div className="relative z-10 w-full">
+          {/* Navigation & Header */}
+          <Header
+            currentTime={dayStatus?.current_time || '18:19:17'}
+            isPaused={isPaused}
+            onTogglePause={handleTogglePause}
+            onOpenFocus={() => setIsFocusOpen(true)}
+            onOpenSettings={() => setIsSettingsOpen(true)}
+            onOpenEndOfDay={() => setIsEndOfDayOpen(true)}
+            onOpenNotificationTest={() => setIsOpenNotificationTester(true)}
+            isHudVisible={isHudVisible}
+            onToggleHud={handleToggleHud}
+          />
 
-        {/* 4 Metric Category Blocks (Productive, Neutral, Distraction, Idle) */}
-        {summary && <StatsGrid summary={summary} />}
+          {/* Central Physical Countdown Instrument & Life Bar */}
+          {dayStatus && <CountdownHero dayStatus={dayStatus} />}
 
-        {/* Asymmetrical Ledger: Time Debt + Opportunity Cost */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          {summary && (
-            <TimeDebtPanel
-              debtSeconds={summary.time_debt_seconds}
-              onRepayDebt={handleRepayDebtDirect}
-              onStartFocus={handleStartFocus}
-            />
-          )}
+          {/* Currently Tracked Desktop Window / Browser Badge */}
+          {currentActivity && <CurrentActivityBadge activity={currentActivity} />}
 
-          {summary && settings && (
-            <OpportunityCostPanel
-              summary={summary}
-              hourlyRate={settings.hourly_rate}
-              currencySymbol={settings.currency_symbol}
-            />
-          )}
+          {/* 4 Metric Category Blocks (Productive, Neutral, Distraction, Idle) */}
+          {summary && <StatsGrid summary={summary} />}
+
+          {/* Asymmetrical Ledger: Time Debt + Opportunity Cost */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            {summary && (
+              <TimeDebtPanel
+                debtSeconds={summary.time_debt_seconds}
+                onRepayDebt={handleRepayDebtDirect}
+                onStartFocus={handleStartFocus}
+              />
+            )}
+
+            {summary && settings && (
+              <OpportunityCostPanel
+                summary={summary}
+                hourlyRate={settings.hourly_rate}
+                currencySymbol={settings.currency_symbol}
+              />
+            )}
+          </div>
+
+          {/* Today's Timeline with Filtered Segments */}
+          <TimelineView timeline={timeline} />
+
+          {/* Weekly Rolling Analytics */}
+          {weeklyReport && <WeeklyAnalytics report={weeklyReport} />}
         </div>
 
-        {/* Today's Timeline with Filtered Segments */}
-        <TimelineView timeline={timeline} />
-
-        {/* Weekly Rolling Analytics */}
-        {weeklyReport && <WeeklyAnalytics report={weeklyReport} />}
+        {/* Futuristic Obsidian & Lime System Footer */}
+        <footer className="relative z-10 mt-10 pt-5 border-t border-white/10 flex flex-wrap items-center justify-between text-[11px] font-mono text-white/50 gap-3">
+          <div className="flex items-center gap-2.5">
+            <span className="w-2 h-2 rounded-full bg-[#ccff00] inline-block shadow-[0_0_8px_#ccff00] animate-pulse" />
+            <span className="font-bold text-[#ebebeb] uppercase tracking-wider">YOUR DAY IS DYING</span>
+            <span className="text-white/30">•</span>
+            <span>100% Local SQLite</span>
+            <span className="text-white/30">•</span>
+            <span className="text-[#ccff00]/80">Zero Telemetry</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-white/40">Browser Bridge:</span>
+            <code className="text-[#ccff00] bg-white/[0.04] px-2 py-0.5 rounded border border-white/10">
+              http://127.0.0.1:41832
+            </code>
+          </div>
+        </footer>
       </div>
-
-      {/* Understated Neomorphic Footer */}
-      <footer className="mt-8 pt-5 border-t border-white/[0.04] flex flex-wrap items-center justify-between text-[11px] font-mono text-[#656673] gap-2">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-red-600 inline-block shadow-[0_0_6px_rgba(239,68,68,0.6)]" />
-          <span className="font-bold text-[#a1a1aa] uppercase">YOUR DAY IS DYING</span>
-          <span>• 100% Local SQLite • Zero Telemetry</span>
-        </div>
-        <div>
-          <span>Browser Bridge: </span>
-          <code className="text-[#808096]">http://127.0.0.1:41832</code>
-        </div>
-      </footer>
 
       {/* Modals & Overlays */}
       {currentActivity && (
