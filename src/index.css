@@ -4,39 +4,39 @@
   :root {
     --font-display: 'Space Grotesk', -apple-system, sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
-    --neu-bg: #1e2028;
-    --neu-surface: #242731;
-    --neu-surface-light: #2b2e3a;
-    --neu-surface-dark: #191a22;
+    --bg-black: #000000;
+    --bg-obsidian: #0c0c0c;
+    --bg-obsidian-surface: #0a0a0a;
+    --accent-lime: #ccff00;
+    --accent-emerald: #10b981;
+    --text-primary: #ebebeb;
   }
 
   body {
     font-family: var(--font-display);
-    background-color: transparent;
-    color: #e4e4e7;
+    background-color: #000000;
+    color: #ebebeb;
     margin: 0;
     padding: 0;
     user-select: none;
     -webkit-user-select: none;
+    overflow-x: hidden;
   }
 
-  /* Custom Neomorphic scrollbar */
+  /* Sleek Obsidian & Lime Minimalist Scrollbar */
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #191a21;
-    border-radius: 9999px;
-    box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.5);
+    background: #000000;
   }
   ::-webkit-scrollbar-thumb {
-    background: linear-gradient(145deg, #2e313e, #222530);
+    background: rgba(255, 255, 255, 0.15);
     border-radius: 9999px;
-    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.35), -1px -1px 2px rgba(255, 255, 255, 0.08);
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(145deg, #373a4b, #2b2e3b);
+    background: #ccff00;
   }
 }
 
@@ -48,160 +48,213 @@
   font-family: 'JetBrains Mono', monospace;
 }
 
+/* 60x60px Linear Gradient Grid Pattern */
+.bg-grid-60 {
+  background-size: 60px 60px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
+
+/* 15% Opacity Noise SVG Overlay */
+.noise-overlay {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E");
+}
+
 /* ========================================================
-   LIGHTER DARK NEOMORPHISM DESIGN TOKENS & UTILITIES
+   OBSIDIAN & LIME GLASSMORPHISM DESIGN SYSTEM SPEC
    ======================================================== */
 
-/* Extruded Neomorphic Panel */
-.neu-panel, .brutal-panel {
-  background: linear-gradient(145deg, #252834, #1f2129);
-  border-radius: 1.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 6px 6px 16px rgba(0, 0, 0, 0.42), -5px -5px 14px rgba(255, 255, 255, 0.06);
+/* Glass Panels: rgba(255, 255, 255, 0.03), blur(16px), border 1px solid rgba(255, 255, 255, 0.1) */
+.neu-panel, .brutal-panel, .glass-panel, .bento-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.neu-panel:hover, .brutal-panel:hover, .bento-card:hover {
+  border-color: rgba(204, 255, 0, 0.4);
+  box-shadow: 0 15px 40px -10px rgba(204, 255, 0, 0.1);
 }
 
 .neu-panel-danger, .brutal-panel-danger {
-  background: linear-gradient(145deg, #2a161b, #1f1014);
-  border-radius: 1.25rem;
-  border: 1px solid rgba(239, 68, 68, 0.25);
-  box-shadow: 6px 6px 16px rgba(0, 0, 0, 0.45), -4px -4px 12px rgba(239, 68, 68, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 2rem;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  box-shadow: 0 10px 30px -10px rgba(239, 68, 68, 0.2);
 }
 
-/* Sunken / Inset / Recessed Surface */
+/* Sunken / Inset Surface: Obsidian Surface #0a0a0a */
 .neu-sunken, .tactile-sunken {
-  background-color: #161720;
-  border-radius: 1rem;
-  border: 1px solid rgba(0, 0, 0, 0.3);
-  box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.55), inset -3px -3px 6px rgba(255, 255, 255, 0.05);
+  background-color: #0a0a0a;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
 }
 
 /* Raised Tactile Control */
 .neu-raised, .tactile-raised {
-  background: linear-gradient(145deg, #282b37, #1f222c);
-  border-radius: 0.875rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.38), -3px -3px 8px rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-/* Neomorphic Interactive Button */
+/* Interactive Glass Button */
 .neu-btn, .brutal-btn {
-  background: linear-gradient(145deg, #272a36, #20222c);
-  border-radius: 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 4px 4px 9px rgba(0, 0, 0, 0.38), -3px -3px 7px rgba(255, 255, 255, 0.06);
-  transition: all 160ms cubic-bezier(0.25, 0.8, 0.25, 1);
-  position: relative;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: 'Space Grotesk', sans-serif;
   text-transform: uppercase;
   font-weight: 700;
   letter-spacing: 0.05em;
-  color: #e4e4e7;
+  color: #ebebeb;
 }
 
 .neu-btn:hover, .brutal-btn:hover {
-  background: linear-gradient(145deg, #2d303e, #232632);
-  box-shadow: 5px 5px 12px rgba(0, 0, 0, 0.45), -4px -4px 9px rgba(255, 255, 255, 0.09);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(204, 255, 0, 0.5);
+  color: #ccff00;
   transform: translateY(-1px);
+  box-shadow: 0 0 20px rgba(204, 255, 0, 0.25);
 }
 
 .neu-btn:active, .brutal-btn:active {
-  background: #171821;
-  border-color: rgba(0, 0, 0, 0.4);
-  box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.6), inset -2px -2px 5px rgba(255, 255, 255, 0.04);
   transform: translateY(1px) scale(0.98);
 }
 
-/* Danger Button Variant */
-.neu-btn-danger, .brutal-btn-danger {
-  background: linear-gradient(145deg, #3d171c, #2a0e12);
-  border-radius: 0.75rem;
-  border: 1px solid rgba(239, 68, 68, 0.35);
-  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.45), -3px -3px 7px rgba(239, 68, 68, 0.12);
-  color: #fca5a5;
+/* Primary Accent Button: Neon Pulse Button (#ccff00, glowing shadow 0 0 30px rgba(204, 255, 0, 0.3), scale: 1.05 hover) */
+.neu-btn-accent, .brutal-btn-accent, .neon-pulse-btn {
+  background-color: #ccff00;
+  color: #000000;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  border-radius: 9999px;
+  border: 1px solid #ccff00;
+  box-shadow: 0 0 30px rgba(204, 255, 0, 0.3);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.neu-btn-danger:hover, .brutal-btn-danger:hover {
-  background: linear-gradient(145deg, #4b1c22, #331116);
-  box-shadow: 5px 5px 13px rgba(0, 0, 0, 0.52), -4px -4px 9px rgba(239, 68, 68, 0.2);
-  color: #ffffff;
+.neu-btn-accent:hover, .brutal-btn-accent:hover, .neon-pulse-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 45px rgba(204, 255, 0, 0.6);
+  background-color: #d4ff1a;
+  color: #000000;
 }
 
-.neu-btn-danger:active, .brutal-btn-danger:active {
-  background: #200a0d;
-  box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.7), inset -2px -2px 5px rgba(239, 68, 68, 0.08);
-  transform: translateY(1px) scale(0.98);
+.neu-btn-accent:active, .brutal-btn-accent:active, .neon-pulse-btn:active {
+  transform: scale(0.98);
 }
 
-/* Primary Accent Button Variant */
-.neu-btn-accent, .brutal-btn-accent {
-  background: linear-gradient(145deg, #d32f2f, #9c1c1c);
-  border-radius: 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.45), -3px -3px 8px rgba(239, 68, 68, 0.4);
-  color: #ffffff;
-}
-
-.neu-btn-accent:hover, .brutal-btn-accent:hover {
-  background: linear-gradient(145deg, #e53935, #b71c1c);
-  box-shadow: 6px 6px 16px rgba(0, 0, 0, 0.55), -4px -4px 10px rgba(239, 68, 68, 0.5);
-}
-
-.neu-btn-accent:active, .brutal-btn-accent:active {
-  background: #8b1515;
-  box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.65), inset -2px -2px 6px rgba(255, 255, 255, 0.2);
-  transform: translateY(1px) scale(0.98);
-}
-
-/* Success Button Variant */
+/* Success Button (Emerald Glow #10b981) */
 .neu-btn-success, .brutal-btn-success {
-  background: linear-gradient(145deg, #13422d, #0d2c1e);
-  border-radius: 0.75rem;
-  border: 1px solid rgba(16, 185, 129, 0.35);
-  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.45), -3px -3px 7px rgba(16, 185, 129, 0.18);
-  color: #34d399;
+  background: rgba(16, 185, 129, 0.15);
+  backdrop-filter: blur(16px);
+  border-radius: 9999px;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  font-weight: 700;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .neu-btn-success:hover, .brutal-btn-success:hover {
-  background: linear-gradient(145deg, #175237, #103625);
-  box-shadow: 5px 5px 12px rgba(0, 0, 0, 0.52), -4px -4px 9px rgba(16, 185, 129, 0.28);
+  background: rgba(16, 185, 129, 0.25);
+  border-color: #10b981;
+  box-shadow: 0 0 30px rgba(16, 185, 129, 0.45);
+  color: #ffffff;
+  transform: scale(1.03);
 }
 
-.neu-btn-success:active, .brutal-btn-success:active {
-  background: #091f15;
-  box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.7), inset -2px -2px 5px rgba(16, 185, 129, 0.1);
-  transform: translateY(1px) scale(0.98);
+/* Danger Button */
+.neu-btn-danger, .brutal-btn-danger {
+  background: rgba(239, 68, 68, 0.15);
+  backdrop-filter: blur(16px);
+  border-radius: 9999px;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  font-weight: 700;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Neomorphic Life Bar / Fuel Meter */
+.neu-btn-danger:hover, .brutal-btn-danger:hover {
+  background: rgba(239, 68, 68, 0.3);
+  border-color: #ef4444;
+  color: #ffffff;
+  box-shadow: 0 0 30px rgba(239, 68, 68, 0.45);
+}
+
+/* Meter Stripes & Gauges */
 .meter-stripes {
   background-image: repeating-linear-gradient(
     -45deg,
-    rgba(0, 0, 0, 0.3),
-    rgba(0, 0, 0, 0.3) 6px,
+    rgba(0, 0, 0, 0.4),
+    rgba(0, 0, 0, 0.4) 6px,
     transparent 6px,
     transparent 12px
   );
 }
 
-/* Soft Neomorphic Glows */
+/* Glow Highlights */
 .glow-danger {
-  box-shadow: 0 0 25px rgba(239, 68, 68, 0.22), 6px 6px 18px rgba(0, 0, 0, 0.45), -5px -5px 14px rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 30px rgba(239, 68, 68, 0.25), 0 10px 30px rgba(0, 0, 0, 0.8);
 }
 
 .glow-warning {
-  box-shadow: 0 0 25px rgba(245, 158, 11, 0.2), 6px 6px 18px rgba(0, 0, 0, 0.45), -5px -5px 14px rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 30px rgba(204, 255, 0, 0.2), 0 10px 30px rgba(0, 0, 0, 0.8);
 }
 
 .glow-focus {
-  box-shadow: 0 0 25px rgba(16, 185, 129, 0.2), 6px 6px 18px rgba(0, 0, 0, 0.45), -5px -5px 14px rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 30px rgba(16, 185, 129, 0.25), 0 10px 30px rgba(0, 0, 0, 0.8);
 }
 
-/* Soft Pulsing Ambient */
-@keyframes neu-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.98); }
+.glow-lime {
+  box-shadow: 0 0 30px rgba(204, 255, 0, 0.35);
 }
 
-.animate-warning-pulse {
-  animation: neu-pulse 2s infinite ease-in-out;
+/* Floating Animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.float-anim {
+  animation: float 6s infinite ease-in-out;
+}
+
+/* Ambient Radial Glow Spheres with 120px Blur Filter */
+.glow-sphere-lime {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(204, 255, 0, 0.08) 0%, rgba(204, 255, 0, 0) 70%);
+  filter: blur(120px);
+  pointer-events: none;
+}
+
+.glow-sphere-emerald {
+  position: absolute;
+  width: 450px;
+  height: 450px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.07) 0%, rgba(16, 185, 129, 0) 70%);
+  filter: blur(120px);
+  pointer-events: none;
 }
