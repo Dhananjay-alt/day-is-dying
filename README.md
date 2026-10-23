@@ -19,8 +19,11 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![SQLite](https://img.shields.io/badge/SQLite-Local_WAL-003B57?style=flat-square&logo=sqlite&logoColor=white)](https://www.sqlite.org/)
 [![Zero Telemetry](https://img.shields.io/badge/Privacy-100%25_Local-10B981?style=flat-square)](#-privacy-first-guarantee)
+[![User Guide](https://img.shields.io/badge/Documentation-User_Guide-blue?style=flat-square)](USER_GUIDE.md)
 
 </div>
+
+> 📘 **Looking for the user manual?** See the complete [**User Guide & Settings Walkthrough**](USER_GUIDE.md) to set timers, focus sessions, day boundaries, and categorization rules.
 
 ---
 
