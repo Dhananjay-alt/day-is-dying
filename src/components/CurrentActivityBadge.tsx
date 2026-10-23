@@ -10,11 +10,11 @@ export const CurrentActivityBadge: React.FC<CurrentActivityBadgeProps> = ({ acti
     switch (category) {
       case 'productive':
         return {
-          bg: 'bg-emerald-950/60',
-          border: 'border-emerald-500/30',
-          text: 'text-emerald-400',
+          bg: 'bg-[#ccff00]/10',
+          border: 'border-[#ccff00]/40',
+          text: 'text-[#ccff00]',
           badgeText: 'PRODUCTIVE',
-          glow: 'shadow-[0_0_12px_rgba(16,185,129,0.2)]',
+          glow: 'shadow-[0_0_15px_rgba(204,255,0,0.25)]',
         };
       case 'distraction':
         return {

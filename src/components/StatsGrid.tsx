@@ -19,19 +19,19 @@ export const StatsGrid: React.FC<StatsGridProps> = ({ summary }) => {
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-7">
       {/* PRODUCTIVE */}
-      <div className="neu-panel p-5 relative group hover:shadow-[8px_8px_20px_rgba(0,0,0,0.7),-5px_-5px_15px_rgba(16,185,129,0.06)] transition-all">
+      <div className="neu-panel p-5 relative group hover:border-[#ccff00]/40 transition-all">
         <div className="flex items-center justify-between mb-3">
-          <span className="font-mono text-xs font-bold tracking-widest text-emerald-400 uppercase">
-            PRODUCTIVE
+          <span className="font-mono text-xs font-bold tracking-widest text-[#ccff00] uppercase">
+            // PRODUCTIVE
           </span>
-          <span className="font-mono text-[11px] text-emerald-400 bg-emerald-950/70 px-2 py-0.5 rounded-full border border-emerald-500/30 font-bold shadow-inner">
+          <span className="font-mono text-[11px] text-[#ccff00] bg-[#ccff00]/10 px-2.5 py-0.5 rounded-full border border-[#ccff00]/30 font-bold shadow-[0_0_10px_rgba(204,255,0,0.2)]">
             {prodPct}%
           </span>
         </div>
-        <div className="font-mono font-extrabold text-2xl sm:text-3xl text-white tracking-wide drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
+        <div className="font-mono font-extrabold text-2xl sm:text-3xl text-[#ebebeb] tracking-wide drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
           {formatHoursMinutes(summary.productive_seconds)}
         </div>
-        <div className="text-[11px] font-mono text-[#787985] mt-1.5">
+        <div className="text-[11px] font-mono text-white/50 mt-1.5">
           Code, Terminal, Research
         </div>
       </div>
