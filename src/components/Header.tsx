@@ -25,36 +25,42 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleHud,
 }) => {
   return (
-    <header className="neu-panel px-6 py-4 mb-6 flex flex-wrap items-center justify-between gap-4">
-      {/* Brand Identity */}
+    <header className="neu-panel px-6 py-4 mb-6 flex flex-wrap items-center justify-between gap-4 relative z-20">
+      {/* Brand Identity: Rounded-xl lime box with black initial + tech-industrial typography */}
       <div className="flex items-center gap-3.5">
-        <div className="w-5 h-5 rounded-full bg-red-600 flex items-center justify-center shadow-[0_0_12px_rgba(239,68,68,0.6)] animate-warning-pulse">
-          <div className="w-2 h-2 rounded-full bg-white/80" />
+        <div className="w-10 h-10 rounded-xl bg-[#ccff00] flex items-center justify-center font-black text-black text-lg shadow-[0_0_25px_rgba(204,255,0,0.4)] select-none">
+          <span style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Y</span>
         </div>
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="font-display font-black text-lg sm:text-xl tracking-wider text-white uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
+            <h1 className="font-display font-black text-lg sm:text-xl tracking-tight text-[#ebebeb] uppercase">
               YOUR DAY IS DYING
             </h1>
-            <span className="text-[10px] font-mono tracking-widest bg-[#111216] text-red-400 px-2 py-0.5 rounded-md border border-white/5 font-bold shadow-inner">
-              YDID
+            <span className="text-[10px] font-mono tracking-widest bg-[#ccff00]/15 text-[#ccff00] px-2 py-0.5 rounded-full border border-[#ccff00]/30 font-bold">
+              v4.2
             </span>
           </div>
-          <p className="text-[11px] font-mono tracking-widest text-[#787985] uppercase">
-            Time won't wait.
+          <p className="text-[11px] font-mono tracking-[0.2em] text-white/50 uppercase">
+            Obsidian // Time Protocol
           </p>
         </div>
       </div>
 
-      {/* Clock & Status */}
-      <div className="flex items-center gap-4">
-        <div className="neu-sunken px-3.5 py-1.5 rounded-xl flex items-center gap-2.5">
-          <div className={`w-2 h-2 rounded-full shadow-sm ${isPaused ? 'bg-amber-400 shadow-amber-400/50' : 'bg-emerald-400 shadow-emerald-400/50'}`} />
-          <span className="font-mono text-xs font-bold tracking-wider text-[#d4d4d8]">
-            {isPaused ? 'TRACKING PAUSED' : 'TRACKING ACTIVE'}
+      {/* Clock & Status: Pill-shaped glass navigation container */}
+      <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
+        <div className="neu-sunken px-4 py-2 rounded-full flex items-center gap-3 border border-white/10">
+          <span
+            className={`w-2 h-2 rounded-full inline-block shadow-sm ${
+              isPaused
+                ? 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)]'
+                : 'bg-[#ccff00] shadow-[0_0_10px_#ccff00] animate-pulse'
+            }`}
+          />
+          <span className="font-mono text-xs font-bold tracking-wider text-[#ebebeb]">
+            {isPaused ? 'TRACKING PAUSED' : 'SYSTEM ACTIVE'}
           </span>
-          <span className="text-[#3f3f50]">|</span>
-          <span className="font-mono text-xs text-[#a1a1aa] font-semibold tracking-wider">{currentTime}</span>
+          <span className="text-white/20">|</span>
+          <span className="font-mono text-xs text-[#ccff00] font-bold tracking-widest">{currentTime}</span>
         </div>
 
         {/* Action Controls */}
