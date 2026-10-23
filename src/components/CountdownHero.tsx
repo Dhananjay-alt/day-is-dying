@@ -59,22 +59,22 @@ export const CountdownHero: React.FC<CountdownHeroProps> = ({ dayStatus }) => {
         onClick={() => soundEngine.playFocusClick()}
         className="neu-sunken p-7 sm:p-10 rounded-2xl flex flex-col items-center justify-center cursor-pointer group hover:shadow-[inset_6px_6px_14px_rgba(0,0,0,0.9),inset_-3px_-3px_9px_rgba(255,255,255,0.04)] active:scale-[0.99] transition-all mb-7 relative"
       >
-        <span className="font-mono text-xs font-bold tracking-[0.35em] text-[#6d6e7a] uppercase mb-2">
-          REMAINING TODAY
+        <span className="font-mono text-xs font-bold tracking-[0.35em] text-[#ccff00] uppercase mb-2">
+          // REMAINING TODAY
         </span>
 
-        <div className="font-mono font-black text-5xl sm:text-7xl md:text-8xl tracking-wider text-white text-center select-all drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
+        <div className="font-mono font-black text-5xl sm:text-7xl md:text-8xl tracking-wider text-white text-center select-all drop-shadow-[0_4px_24px_rgba(0,0,0,0.9)]">
           {formatSeconds(dayStatus.remaining_seconds)}
         </div>
 
         <div className="flex items-center gap-4 mt-4">
-          <span className="font-mono text-xs sm:text-sm text-[#a1a1aa] font-semibold tracking-wider">
+          <span className="font-mono text-xs sm:text-sm text-[#ebebeb]/70 font-semibold tracking-wider">
             {formatHoursMinutes(dayStatus.remaining_seconds)} LEFT
           </span>
-          <span className="text-[#3f3f50]">•</span>
+          <span className="text-white/20">•</span>
           <span
             className={`font-mono text-xs sm:text-sm font-bold tracking-wider ${
-              isCritical ? 'text-red-400 drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]' : isDying ? 'text-amber-400' : 'text-[#d4d4d8]'
+              isCritical ? 'text-red-400 drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]' : isDying ? 'text-amber-400' : 'text-[#ccff00]'
             }`}
           >
             {dayStatus.percentage_elapsed}% GONE
@@ -84,20 +84,20 @@ export const CountdownHero: React.FC<CountdownHeroProps> = ({ dayStatus }) => {
 
       {/* THE DAY AS A LIFE BAR / FUEL GAUGE */}
       <div>
-        <div className="flex items-center justify-between text-xs font-mono font-bold tracking-wider text-[#a1a1aa] mb-2.5 px-1">
+        <div className="flex items-center justify-between text-xs font-mono font-bold tracking-wider text-white/70 mb-2.5 px-1">
           <span className="uppercase flex items-center gap-2">
             <span>DAY LIFE BAR</span>
-            <span className="text-[10px] text-[#656673] font-normal">
+            <span className="text-[10px] text-white/40 font-normal">
               ({formatHoursMinutes(dayStatus.elapsed_seconds)} elapsed)
             </span>
           </span>
-          <span className={isCritical ? 'text-red-400 font-extrabold text-sm' : 'text-[#e4e4e7] text-sm'}>
+          <span className={isCritical ? 'text-red-400 font-extrabold text-sm' : 'text-[#ccff00] font-extrabold text-sm'}>
             {dayStatus.percentage_elapsed}%
           </span>
         </div>
 
         {/* Life Bar Track with deep neomorphic sunken channel */}
-        <div className="neu-sunken h-8 w-full p-1.5 rounded-full relative overflow-hidden">
+        <div className="neu-sunken h-8 w-full p-1.5 rounded-full relative overflow-hidden border border-white/10">
           <div
             className={`h-full rounded-full transition-all duration-1000 ease-out relative meter-stripes shadow-md ${
               isDead
@@ -106,7 +106,7 @@ export const CountdownHero: React.FC<CountdownHeroProps> = ({ dayStatus }) => {
                 ? 'bg-gradient-to-r from-red-950 via-red-600 to-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)]'
                 : isDying
                 ? 'bg-gradient-to-r from-amber-950 via-amber-600 to-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.4)]'
-                : 'bg-gradient-to-r from-zinc-800 via-zinc-600 to-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.4)]'
+                : 'bg-gradient-to-r from-[#0a0a0a] via-[#10b981] to-[#ccff00] shadow-[0_0_20px_rgba(204,255,0,0.45)]'
             }`}
             style={{ width: `${Math.min(100, Math.max(0, dayStatus.percentage_elapsed))}%` }}
           >
